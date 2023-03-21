@@ -177,3 +177,10 @@ DEL_all_focal_RB1	274	0.534	DEL_maj_focal_RB1	247	0.481	DEL_minor_focal_RB1	27	0
 DEL_all_focal_TRAF3	123	0.24	DEL_maj_focal_TRAF3	84	0.164	DEL_minor_focal_TRAF3	39	0.07599999999999998
 DEL_all_focal_CYLD	146	0.285	DEL_maj_focal_CYLD	116	0.226	DEL_minor_focal_CYLD	30	0.05899999999999997
 DEL_all_focal_TP53	73	0.142	DEL_maj_focal_TP53	44	0.086	DEL_minor_focal_TP53	29	0.055999999999999994
+AMP_maj_call_chr_1q	177	0.345	AMP_maj_call_chr_1q	177	0.345	AMP_maj_cminor_chr_1q	0	0
+AMP_maj_call_chr_8q	57	0.111	AMP_maj_call_chr_8q	57	0.111	AMP_maj_cminor_chr_8q	0	0
+DEL_maj_call_chr_17p	49	0.096	DEL_maj_call_chr_17p	49	0.096	DEL_maj_cminor_chr_17p	0	0
+DEL_maj_call_chr_1p	121	0.236	DEL_maj_call_chr_1p	121	0.236	DEL_maj_cminor_chr_1p	0	0
+DEL_maj_call_chr_13q	255	0.497	DEL_maj_call_chr_13q	255	0.497	DEL_maj_cminor_chr_13q	0	0
+DEL_maj_call_chr_14q	105	0.205	DEL_maj_call_chr_14q	105	0.205	DEL_maj_cminor_chr_14q	0	0
+DEL_maj_call_chr_16q	127	0.248	DEL_maj_call_chr_16q	127	0.248	DEL_maj_cminor_chr_16q	0	0
