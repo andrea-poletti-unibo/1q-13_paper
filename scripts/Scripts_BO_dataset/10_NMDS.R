@@ -68,8 +68,6 @@ names(data)
 
 
 
-MDSdata <- data
-
 # filter MDSdata for missing data (missing traslocation from AMB or Bo2005 protocols)
 
 missing_T <- is.na(import$t_11_14) + 
@@ -77,54 +75,21 @@ missing_T <- is.na(import$t_11_14) +
   is.na(import$t_6_14) + 
   is.na(import$t_14_16) + 
   is.na(import$t_14_20)
+
 table(missing_T)
-import$missing_T <- missing_T
 
-table(missing_T, import$t_IgH, exclude = NULL)
+
+table(missing_T, data$t_IgH, exclude = NULL)
 table(missing_T, import$PROTOCOL, exclude = NULL)
-table(import$t_IgH, import$PROTOCOL, exclude = NULL)
-
-# import %>% dplyr::select(missing_T, t_IgH, PROTOCOL) %>% View
-
-df.2<- dplyr::filter(MDSdata, !is.na(t_IgH))
+table(data$t_IgH, import$PROTOCOL, exclude = NULL)
 
 
-data$HyperDiploidy %>% table
-295/513
+df.2<- dplyr::filter(data, !is.na(t_IgH))
 
 
+############################# NMDS ################################
 
-library(MASS)
-# swiss.x <- as.matrix(swiss[, -1])
-# swiss.dist <- dist(swiss.x)
-# 
-# swiss.mds <- isoMDS(swiss.dist)
-# head(swiss.mds$points)
-# 
-# plot(swiss.mds$points, type = "n")
-# text(swiss.mds$points, labels = as.character(1:nrow(swiss.x)))
-# 
-# swiss.sh <- Shepard(swiss.dist, swiss.mds$points)
-# plot(swiss.sh, pch = ".")
-# 
-# lines(swiss.sh$x, swiss.sh$yf, type = "S")
-####################################
-
-# isoMDS function
-
-# MDSdata <- as.matrix(df.2)
-# 
-# MDS.dist<- dist(t(MDSdata), method = "manhattan")
-# 
-# str(MDS.dist)
-# summary(MDS.dist)
-# 
-# MDS<- isoMDS(MDS.dist)
-
-####################################
-
-# metaMDS function
-library(vegan)
+set.seed(123)
 
 #________________ distances between alterations ____________
 MDSdata <- t(as.matrix(df.2[,-1])) # transpose the data matrix (the method considers rows as the observation to localize), exclude sample column
@@ -134,20 +99,24 @@ MDS.dist<- dist(MDSdata, method = "manhattan")
 
 fit <- vegan::metaMDS(comm = MDS.dist, engine = "monoMDS", k=2, try= 50, trymax = 100)
 
+fit$stress
+
 ordiplot(fit, type = "text")
 ordiplot(fit, type = "points")
+
+
+library(ggrepel)
 
 ggdata <- as.data.frame(fit$points)
 ggdata$alteration <- rownames(ggdata)
 
-library(ggrepel)
 ggplot(ggdata, aes(MDS1, MDS2)) + geom_point(size= 3, alpha=0.5) + 
-  geom_label_repel( data = ggdata[ggdata$MDS1 > 50 | ggdata$MDS1 < -50,], aes(MDS1,MDS2, label=alteration)) 
+  geom_label_repel( aes(MDS1,MDS2, label=alteration)) + 
+  ggtitle("NMDS of genomic variables in BO dataset", 
+          subtitle = paste0("Run ", fit$tries, " - stress: ", fit$stress %>% round(6)))
 
-ggplot(ggdata, aes(MDS1, MDS2)) + geom_point(size= 3, alpha=0.5) + 
-  geom_label_repel( aes(MDS1,MDS2, label=alteration)) 
-
-
+dir.create("plots/NMDS")
+ggsave("plots/NMDS/NMDS_vars_BO.png", width = 5, height = 5)
 
 #________________distances between samples __________________
 
@@ -156,6 +125,7 @@ rownames(MDSdata2) <- df.2$sample
 
 
 MDS.dist2<- dist(MDSdata2, method = "manhattan")
+
 
 fit2 <- vegan::metaMDS(comm = MDS.dist2, engine = "monoMDS", k=2, try= 50, trymax = 100)
 
@@ -195,6 +165,7 @@ FIT2 %>% ggplot(aes(MDS1, MDS2)) + geom_point()
 
 
 #=============== 3d NMDS distances on samples ===================
+
 library(rgl)
 library(pca3d)
 library(vegan3d)
@@ -203,72 +174,63 @@ fit3 <- vegan::metaMDS(comm = MDS.dist2, engine = "monoMDS", k=3, try= 50, tryma
 
 fit3$grstress # stress: 0.1251906
 
-# save.image("Script/4.2_NMDS_env.Rdata")
-load("Script/4.2_NMDS_env.Rdata")
+# save.image("workfiles/new_NMDS_env_BO.Rdata")
 
 
-# shape <-  ifelse(risk_1q_13 == 1 ,"t", ifelse( risk_1q_13 == 2, "s", "c"))
+load("workfiles/NMDS_env_BO.Rdata") # load env used for the paper images
 
-outdir <- "C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/PAPER_FIGURES_OFFICIAL/"
 
 #_________________ paper images ________________________
 
-pca3d(fit3$points, col= category_HD, group= as.factor(category_HD), 
-      show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s")
-# snapshotPCA3d(paste0(outdir,"NMDS_bolo_hyperdiploid.png"))
-# rgl.snapshot("C:/Users/andre/Desktop/test.png", width=3000, height=3000)
-
-snapshot3d(paste0(outdir,"NMDS_bolo_hyperdiploid.png"), width=10000, height=10000)
+outdir <- "plots/NMDS/"
 
 
-rgl.postscript("C:/Users/mm_gr/Desktop/test.pdf",fmt="pdf")
-
-
-view3d( theta = 0, phi = 15)
-
-pca3d(fit3$points, col= category_t_IgH, group= as.factor(category_t_IgH), 
-      show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
-snapshot3d(paste0(outdir,"NMDS_bolo_t_IGH.png"), width=10000, height=10000)
-
-
-pca3d(fit3$points, col= category_MMrisk, group= as.factor(category_MMrisk), 
-      show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"),  shape="s" )
-snapshot3d(paste0(outdir,"NMDS_bolo_MMgroups.png"), width=10000, height=10000)
-
-
-pca3d(fit3$points, col= category_AMP_1q, group= as.factor(category_AMP_1q), 
-      show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"),  shape="s" )
-snapshot3d(paste0(outdir,"NMDS_bolo_amp1q.png"), width=10000, height=10000)
-
-
-pca3d(fit3$points, col= category_DEL_13q, group= as.factor(category_DEL_13q), 
-      show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"),  shape="s" )
-snapshot3d(paste0(outdir,"NMDS_bolo_del13.png"), width=10000, height=10000)
+# pca3d(fit3$points, col= category_HD, group= as.factor(category_HD), 
+#       show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s")
+# snapshot3d(paste0(outdir,"NMDS_bolo_hyperdiploid.png"), width=10000, height=10000)
+# 
+# 
+# pca3d(fit3$points, col= category_t_IgH, group= as.factor(category_t_IgH), 
+#       show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
+# snapshot3d(paste0(outdir,"NMDS_bolo_t_IGH.png"), width=10000, height=10000)
+# 
+# 
+# pca3d(fit3$points, col= category_MMrisk, group= as.factor(category_MMrisk), 
+#       show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"),  shape="s" )
+# snapshot3d(paste0(outdir,"NMDS_bolo_MMgroups.png"), width=10000, height=10000)
+# 
+# 
+# pca3d(fit3$points, col= category_AMP_1q, group= as.factor(category_AMP_1q), 
+#       show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"),  shape="s" )
+# snapshot3d(paste0(outdir,"NMDS_bolo_amp1q.png"), width=10000, height=10000)
+# 
+# 
+# pca3d(fit3$points, col= category_DEL_13q, group= as.factor(category_DEL_13q), 
+#       show.centroids = T , axe.titles=c("NMDS1","NMDS2","NMDS3"),  shape="s" )
+# snapshot3d(paste0(outdir,"NMDS_bolo_del13.png"), width=10000, height=10000)
 
 
 
 #________________________________________________________
 # other
 
-risk_1q_13<- df.2$AMP_1q + df.2$DEL_13q
-category <- ifelse(risk_1q_13 == 1 ,"gray80", ifelse( risk_1q_13 == 2, "orangered", "turquoise3"))
-pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
+# risk_1q_13<- df.2$AMP_1q + df.2$DEL_13q
+# category <- ifelse(risk_1q_13 == 1 ,"gray80", ifelse( risk_1q_13 == 2, "orangered", "turquoise3"))
+# pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
+# 
+# category <- ifelse(risk_1q_13 == 2 ,"green", "red")
+# pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
+# 
+# category <- ifelse(risk_1q_13 == 1 ,"turquoise3", "red")
+# pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
+# 
+# category <- ifelse(risk_1q_13 == 0 ,"turquoise3", "red")
+# pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
 
-category <- ifelse(risk_1q_13 == 2 ,"green", "red")
-pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
 
-category <- ifelse(risk_1q_13 == 1 ,"turquoise3", "red")
-pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
-
-category <- ifelse(risk_1q_13 == 0 ,"turquoise3", "red")
-pca3d(fit3$points, col= category, group= as.factor(category), show.centroids = T, axe.titles=c("NMDS1","NMDS2","NMDS3"), shape="s" )
-
-
-############################ paper images PT2 #############################
+############################ paper images auto #############################
 
 library(rgl)
-load("Script/4.2_NMDS_env.Rdata")
-
 
 category_risk1 <- ifelse(risk_1q_13 == 1 ,"orangered", "gray10")
 
@@ -381,9 +343,8 @@ for(i in seq_along(CATS)){
   # standard POV
   # rgl.viewpoint(theta = 45, phi = 45, fov = 60, zoom = 0.7)
   
-  snapshot3d(paste0("C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/PAPER_FIGURES_OFFICIAL/NMDS/",name,"_NMDS_Bolo_def3D.png"), height = 2000, width = 2000)
+  snapshot3d(paste0("plots/NMDS/",name,"_NMDS_Bolo_def3D.png"), height = 2000, width = 2000)
 }
-
 
 
 #____ center of Mass analysis _____
@@ -550,4 +511,4 @@ rgl.quads( x = rep(xlim, each = 2),
 
 rgl.viewpoint(theta = 60, phi = 30, fov = 60, zoom = 0.7)
 
-snapshot3d(paste0("C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/PAPER_FIGURES_OFFICIAL/NMDS/",name,"_NMDS_Bolo_CLUSTERS.png"), height = 2000, width = 2000)
+snapshot3d(paste0("plots/NMDS/",name,"_NMDS_Bolo_CLUSTERS.png"), height = 2000, width = 2000)

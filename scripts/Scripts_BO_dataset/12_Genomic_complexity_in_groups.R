@@ -64,15 +64,15 @@ names(data)
 
 
 
-MDSdata <- data
-# filter MDSdata for missing data (missing traslocation from AMB or Bo2005 protocols)
+
+# filter data for missing data (missing traslocation from AMB or Bo2005 protocols)
 
 
 missing_T <- is.na(import$t_11_14) + is.na(import$t_4_14) + is.na(import$t_6_14) + is.na(import$t_14_16) + is.na(import$t_14_20)
 table(missing_T)
 import$missing_T <- missing_T
 
-df.2<- filter(MDSdata, !is.na(t_IgH))
+df.2<- filter(data, !is.na(t_IgH))
 
 df.2 <- mutate(df.2, SUM=rowSums(df.2[,-1]))
 
@@ -128,7 +128,7 @@ df.2 %>% ggplot(aes(group3, SUM, colour=group3)) +
   ggpubr::stat_compare_means()
 
 
-#_____ def plots _____ paper
+#________ def plots _____ paper
 
 my_comparisons <- list( c("1q&13-", "1q/13"), 
                         c("1q/13", "1q&13+"), 
