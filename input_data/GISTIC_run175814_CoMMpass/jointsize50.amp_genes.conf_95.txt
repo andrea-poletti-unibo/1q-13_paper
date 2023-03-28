@@ -1,0 +1,7 @@
+cytoband	8q24.21	16p13.13	
+q value	0.0003621	0.00047891	
+residual q value	0.0003621	0.00047891	
+wide peak boundaries	chr8:128390201-128581999	chr16:11975651-12083099	
+genes in wide peak	POU5F1B	TNFRSF17	
+	LOC727677	GSPT1	
+		SNX29	

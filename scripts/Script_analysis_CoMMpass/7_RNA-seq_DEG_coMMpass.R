@@ -1,4 +1,3 @@
-# BiocManager::install("Glimma")
 
 # load packages
 library(data.table)
@@ -17,7 +16,7 @@ library(lattice)
 
 
 # load database
-import <- fread("C:/Users/mm_gr/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/complete_database_1q_13_CoMMpass_240121.txt", na.strings=c("","NA"))
+import <- fread("results/complete_database_CoMMpass_1q_13.txt")
 
 # define the MM risk label from commpass broad + focal CNAs
 import$AMP_1q_genes_all <- with(import, 
@@ -36,10 +35,12 @@ compassGroup <- import %>% dplyr::select(Study_Visit_iD,MMrisk_CLASSIFIER_ALL)
 
 NAME<-"CoMMpass_risk1_vs_risk3" # set name of analysis
 
-path <- "C:/Users/mm_gr/Desktop/mmrisk_deg_analysis_14-01-22"
+path <- "results/DEG_analysis/"
 
 dir.create(path)
+
 opts_knit$set(root.dir = path)
+
 DIR<- path
 
 setwd(path)
@@ -47,7 +48,7 @@ setwd(path)
 
 
 # load GENE COUNT trascriptome data from CoMMpass RNA-seq
-importCounts <- fread("C:/Users/mm_gr/Alma Mater Studiorum Università di Bologna/MM group - Documenti/EVERGREEN_inter-projects_files/COMMPASS/IA13a/Expression_Estimates/Gene_based/MMRF_CoMMpass_IA13a_E74GTF_Salmon_Gene_Counts.txt.gz") # import gene counts data
+importCounts <- fread("../../input_data/CoMMpass/MMRF_CoMMpass_IA13a_E74GTF_Salmon_Gene_Counts.txt.gz") # import gene counts data
 
 # define the dataframe with group assignments
 groupImport<- compassGroup
@@ -89,6 +90,7 @@ names(importCounts)[1]<-"ensembl_gene_id"
 
 #merge the import file with the new downloaded annotations
 mergedInfoCounts<- left_join(gene_coords, importCounts, by = "ensembl_gene_id") # NB! FROM 57997 genes TO 52460 genes
+
 
 
 
@@ -184,39 +186,40 @@ cpm<-cpm(x)
 lcpm<-cpm(x, log=T)
 
 #notice differences after trasnformation
-# View(cpm[1:50,1:20])
-# View(lcpm[1:50,1:20])
-# View(counts[1:50,1:20])
+cpm[1:5,1:5]
+lcpm[1:5,1:5]
+counts[1:5,1:5]
 
-#~~~~~~~~~ OPTIONAL: plot a GRID to best choose the optimum parameters to filter lowexpr genes ~~~~~~~~~
-#
-i_cpm<-vector()
-j_pat<-vector()
-c_keep<-vector()
-for (i in seq(0.1,2,by=0.05)){   # try different CPM thresholds
-  for (j in seq(1,30,by=1)){     # try different min patients cutoffs
-    vec <- rowSums(cpm>i)>=j
-    c<-table(vec)[2]             # use the kept genes as the result value
-    c_keep<-append(c_keep,c)
-    i_cpm<-append(i_cpm,i)
-    j_pat<-append(j_pat,j)
-  }
-}
 
-plot(c_keep)
-
-#creation of a dataframe
-data <- data.frame(i_cpm, j_pat, c_keep)
-
-#plot with ggplot
-ggplot(data, aes(i_cpm, j_pat, z= c_keep)) +
-  geom_tile(aes(fill = c_keep)) +
-  theme_bw()
-
-#plot with lattice
-library(lattice)
-par(mar=c(3,4,2,2))
-levelplot(c_keep ~ i_cpm*j_pat, data=data  , xlab="cpm" , col.regions = heat.colors(100)[length(heat.colors(100)):1]   , main="")
+# #~~~~~~~~~ OPTIONAL: plot a GRID to best choose the optimum parameters to filter lowexpr genes ~~~~~~~~~
+# #
+# i_cpm<-vector()
+# j_pat<-vector()
+# c_keep<-vector()
+# for (i in seq(0.1,2,by=0.05)){   # try different CPM thresholds
+#   for (j in seq(1,30,by=1)){     # try different min patients cutoffs
+#     vec <- rowSums(cpm>i)>=j
+#     c<-table(vec)[2]             # use the kept genes as the result value
+#     c_keep<-append(c_keep,c)
+#     i_cpm<-append(i_cpm,i)
+#     j_pat<-append(j_pat,j)
+#   }
+# }
+# 
+# plot(c_keep)
+# 
+# #creation of a dataframe
+# data <- data.frame(i_cpm, j_pat, c_keep)
+# 
+# #plot with ggplot
+# ggplot(data, aes(i_cpm, j_pat, z= c_keep)) +
+#   geom_tile(aes(fill = c_keep)) +
+#   theme_bw()
+# 
+# #plot with lattice
+# library(lattice)
+# par(mar=c(3,4,2,2))
+# levelplot(c_keep ~ i_cpm*j_pat, data=data  , xlab="cpm" , col.regions = heat.colors(100)[length(heat.colors(100)):1]   , main="")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -234,29 +237,28 @@ table(keep.exprs)
 x<-x[keep.exprs,, keep.lib.sizes=FALSE]
 dim(x)
 
-# plotting the results of filtering
-library(RColorBrewer)
-nsamples <- ncol(x)
-col <- brewer.pal(nsamples, "Paired")
-par(mfrow=c(1,2))
-plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0,0.21), las=2,
-     main="", xlab="")
-title(main="A. Raw data", xlab="Log-cpm")
-abline(v=0, lty=3)
-for (i in 2:nsamples){
-  den <- density(lcpm[,i])
-  lines(den$x, den$y, col=col[i], lwd=2)
-}
-lcpm <- cpm(x, log=TRUE)
-plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0,0.21), las=2,
-     main="", xlab="")
-title(main="B. Filtered data", xlab="Log-cpm")
-abline(v=0, lty=3)
-for (i in 2:nsamples){
-  den <- density(lcpm[,i])
-  lines(den$x, den$y, col=col[i], lwd=2)
-}
-
+# # plotting the results of filtering
+# library(RColorBrewer)
+# nsamples <- ncol(x)
+# col <- brewer.pal(nsamples, "Paired")
+# par(mfrow=c(1,2))
+# plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0,0.21), las=2,
+#      main="", xlab="")
+# title(main="A. Raw data", xlab="Log-cpm")
+# abline(v=0, lty=3)
+# for (i in 2:nsamples){
+#   den <- density(lcpm[,i])
+#   lines(den$x, den$y, col=col[i], lwd=2)
+# }
+# lcpm <- cpm(x, log=TRUE)
+# plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0,0.21), las=2,
+#      main="", xlab="")
+# title(main="B. Filtered data", xlab="Log-cpm")
+# abline(v=0, lty=3)
+# for (i in 2:nsamples){
+#   den <- density(lcpm[,i])
+#   lines(den$x, den$y, col=col[i], lwd=2)
+# }
 
 
 
@@ -267,29 +269,26 @@ x<- calcNormFactors(x, method = "TMM")
 head(x$samples$norm.factors, n=20)
 
 
-# **PLOT> intersamples expr normalization boxplots**
-
-# explore the effect of normalization (duplicated and modified data to enhance the visual effect)
-
-x2<-x[,1:50] # ONLY first 20 samples in this example
-x2$samples$norm.factors <- 1
-# x2$counts[,1]<- ceiling(x2$counts[,1]*0.05) # first sample counts are reduced to 5% of original values
-# x2$counts[,2]<-x2$counts[,2]*5 # second sample counts are inflated to 500% of original value
-
-library(RColorBrewer)
-nsamples <- ncol(x)
-col <- brewer.pal(nsamples, "Paired")
-
-par(mfrow=c(1,2))
-lcpm <- cpm(x2, log=TRUE)
-boxplot(lcpm, las=2, col=col, main="")
-title(main="A. Example: Unnormalised data",ylab="Log-cpm")
-
-x2 <- calcNormFactors(x2)
-x2$samples$norm.factors
-lcpm <- cpm(x2, log=TRUE)
-boxplot(lcpm, las=2, col=col, main="")
-title(main="B. Example: Normalised data",ylab="Log-cpm")
+# # **PLOT> intersamples expr normalization boxplots**
+# # explore the effect of normalization (duplicated and modified data to enhance the visual effect)
+# x2<-x[,1:50] # ONLY first 20 samples in this example
+# x2$samples$norm.factors <- 1
+# # x2$counts[,1]<- ceiling(x2$counts[,1]*0.05) # first sample counts are reduced to 5% of original values
+# # x2$counts[,2]<-x2$counts[,2]*5 # second sample counts are inflated to 500% of original value
+# 
+# nsamples <- ncol(x)
+# col <- brewer.pal(nsamples, "Paired")
+# 
+# par(mfrow=c(1,2))
+# lcpm <- cpm(x2, log=TRUE)
+# boxplot(lcpm, las=2, col=col, main="")
+# title(main="A. Example: Unnormalised data",ylab="Log-cpm")
+# 
+# x2 <- calcNormFactors(x2)
+# x2$samples$norm.factors
+# lcpm <- cpm(x2, log=TRUE)
+# boxplot(lcpm, las=2, col=col, main="")
+# title(main="B. Example: Normalised data",ylab="Log-cpm")
 
 
 # [4] =================== limma & Glimma: identify DEG and visualize results ==========================
@@ -367,11 +366,11 @@ v[1:10,1:10]
 
 # 4.4________Fitting linear models and bayesian t-test for comparisons of interest________
 
-vfit<- lmFit(v,design) # calculate the mean expression level for each gene in the different groups
+vfit <- lmFit(v, design) # calculate the mean expression level for each gene in the different groups
 
 vfit<- contrasts.fit(vfit, contrasts = contr.matrix) # compare the groups
 
-efit<- eBayes(vfit) # calculate statistical bayesian-variance-adjusted T-test to find significative differential expressed genes (pval<0.05)
+efit<- eBayes(vfit) # calculate statistical bayesian-variance-adjusted T-test to find significant differential expressed genes (pval<0.05)
 
 
 # **PLOT> voom plot: median-variance heteroscedascity correction**
@@ -389,7 +388,7 @@ topGenes<- tab[tab[,"adj.P.Val"]< 0.001,]
 
 # **PLOT> volcano plot of DEG (p<0.05)**
 dev.off()
-pdf("volcano_500_DEG.pdf", width = 9, height = 6)
+pdf("volcano_500_DEG.pdf", width = 9, height = 7)
 volcanoplot(efit,coef = 1, highlight = 500, names=efit$genes$genes.hgnc_symbol)
 title(main="Volcano plot of top 500 deregulated genes")
 dev.off()
@@ -415,7 +414,7 @@ tabStrict<- topTreat(tfit, coef=1, sort.by = "p", number=strictNum) # SET the co
 
 # **PLOT> volcano plot of STRICT DEG**
 dev.off()
-pdf("volcano_500_strict-DEG.pdf", width = 9, height = 6)
+pdf("volcano_500_strict-DEG.pdf", width = 9, height = 7)
 volcanoplot(tfit,coef = 1, highlight = strictNum, names= tfit$genes$genes.hgnc_symbol) # SET the correct number of strict DEG genes
 title(main="Volcano plot of STRICT (fold-change>2) deregulated genes")
 dev.off()
@@ -473,18 +472,21 @@ glMDPlot(tfit, coef=1, status=dt, main=colnames(tfit)[1],
 
 
 # 5.0____________________ SAVE ENV RDATA __________________
-save.image("C:/Users/mm_gr/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/other/DEG_analysis/7_RNA-seq_DEG_coMMpass_env.Rdata")
+
+# dir.create("../../workfiles/DEG/", recursive = T, showWarnings = F)
+
+# save.image("../../workfiles/DEG/RNA-seq_DEG_coMMpass_env.Rdata")
 
 # save for no Traslocation
-# save.image("C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/other/DEG_analysis/7_RNA-seq_DEG_coMMpass_env_noT.Rdata")
+# save.image("../../workfiles/DEG/RNA-seq_DEG_coMMpass_env_noT.Rdata")
 
 
 #________________________ LOAD ENV RDATA _________________
 # load DEG pipeline .Rdata
-load("C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/other/DEG_analysis/7_RNA-seq_DEG_coMMpass_env.Rdata")
+# load("../../workfiles/DEG/RNA-seq_DEG_coMMpass_env.Rdata")
 
 # load DEG pipeline no traslocation .Rdata
-load("C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/other/DEG_analysis/7_RNA-seq_DEG_coMMpass_env_noT.Rdata")
+# load("../../workfiles/DEG/RNA-seq_DEG_coMMpass_env_noT.Rdata")
 
 
 # 6.0____________________ PAPER PLOTS ____________________
@@ -519,316 +521,11 @@ df %>% ggplot(aes(x = log2_FoldChange, y = neg_log10_pvalue)) + geom_point(aes(c
   xlab("Log2 Fold-change")+
   ylab("-log10(p-value)")
 
-ggsave("C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/PAPER_FIGURES_OFFICIAL/DEG_analysis/Volcano_plot_strict_DEG.pdf", device = "pdf", width = 8, height = 7)
+
+dir.create("../../plots/DEG_analysis/", recursive = T, showWarnings = F)
+ggsave("../../plots/DEG_analysis/Volcano_plot_strict_DEG.pdf", device = "pdf", width = 8, height = 7)
 
 # no trasnlocations
-# ggsave("C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/PAPER_FIGURES_OFFICIAL/DEG_analysis/Volcano_plot_strict_DEG_noT.pdf", device = "pdf", width = 8, height = 7)
+# ggsave("../../plots/DEG_analysis/Volcano_plot_strict_DEG_noT.pdf", device = "pdf", width = 8, height = 7)
 
-
-
-
-# 8.0 ______________ HEATMAPS ______________________
-
-# **PLOT> HEATMAP**
-# HEATMAP of DEG
-
-vplot<-v
-
-# vplot<- vplot[,20:420] #reduce the plot size over a smaller subset of samples
-
-vplot1.3<-vplot[,vplot$targets$group!="risk2"] #exlude group R2 from plot (if present)
-table(vplot1.3$targets$group)
-groupPlot<-as.character(vplot1.3$targets$group) 
-
-
-groupPlot<-as.character(vplot1.3$targets$group)
-
-groupColors<- gsub("risk3","green3",groupPlot)
-groupColors<- gsub("risk1","orange",groupColors)
-
-library(gplots)
-
-DEGresults.topgenes <- DEGresults$genes.ensembl_gene_id[1:length(de.common)]
-
-i <- which(vplot1.3$genes$genes.ensembl_gene_id %in% DEGresults.topgenes)
-
-mycol <- colorpanel(1000,"blue","white","red")
-
-
-heatmap.2(vplot1.3$E[i,], 
-          scale = "row",    # NB. SCALED expr values! 
-          labRow=vplot$genes$genes.hgnc_symbol[i],
-          labCol = groupPlot,
-          col= mycol,
-          # hclustfun = function(x) hclust(x, method="ward.D2"),
-          trace="none",
-          density.info="none",
-          dendrogram="column",
-          ColSideColors = groupColors)
-
-
-
-
-
-# **PLOT> HEATMAP all genes**
-
-# HEATMAP of DEG
-
-vplot<-v
-
-groupPlot<-as.character(vplot$targets$group)
-
-groupColors<- gsub("risk2","green3",groupPlot)
-groupColors<- gsub("risk1","orange",groupColors)
-groupColors<- gsub("risk3","royalblue1",groupColors)
-
-library(gplots)
-
-DEGresults.topgenes <- DEGresults$genes.ensembl_gene_id[1:length(de.common)]
-
-
-human <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-
-CCgenes=getBM(attributes=c("hgnc_symbol","ensembl_gene_id"), 
-              filters="go_parent_term", 
-              values="GO:0007049", #download the additional annotation for the compass gene list
-              mart=human)
-
-
-CellCycle.genes <- v$genes$genes.ensembl_gene_id[v$genes$genes.ensembl_gene_id %in% CCgenes$ensembl_gene_id]
-
-i <- which(v$genes$genes.ensembl_gene_id %in% CCgenes$ensembl_gene_id)
-
-mycol <- colorpanel(1000,"blue","white","red")
-
-
-heatmap.2(vplot$E[i,], 
-          scale = "row",    # NB. SCALED expr values! 
-          labRow=vplot$genes$genes.hgnc_symbol[i],
-          labCol = groupPlot,
-          col= mycol,
-          # hclustfun = function(x) hclust(x, method="ward.D2"),
-          trace="none",
-          density.info="none",
-          dendrogram="column",
-          ColSideColors = groupColors)
-
-
-
-
-# heat map of deg for CCND1-VS-CCND2
-vplot<-v
-
-groupPlot<-as.character(vplot$targets$group)
-
-groupColors<- gsub("risk2","green3",groupPlot)
-groupColors<- gsub("risk1","orange",groupColors)
-groupColors<- gsub("risk3","royalblue1",groupColors)
-
-library(gplots)
-
-DEGresults.topgenes <- DEGresults$genes.ensembl_gene_id[1:length(de.common)]
-
-i <- which(vplot$genes$genes.hgnc_symbol %in% c("CCND1","CCND2"))
-
-mycol <- colorpanel(1000,"blue","white","red")
-
-
-heatmap.2(vplot$E[i,], 
-          scale = "row",    # NB. SCALED expr values! 
-          labRow=vplot$genes$genes.hgnc_symbol[i],
-          labCol = groupPlot,
-          col= mycol,
-          # hclustfun = function(x) hclust(x, method="ward.D2"),
-          trace="none",
-          density.info="none",
-          dendrogram="column",
-          ColSideColors = groupColors)
-
-
-
-
-# **PLOT> HEATMAP all genes - CATEGORIES RISK2a RISK2b**
-
-# HEATMAP of DEG
-
-vplot<-v
-
-
-as.character(vplot$targets$group) %>% length()
-groupSelect$MMrisk_CLASSIFIER_ALL %>% length()
-
-(as.character(vplot$targets$group) == groupSelect$MMrisk_CLASSIFIER_ALL) %>% table
-
-data.group <- import %>% filter(Study_Visit_iD %in% groupSelect$Study_Visit_iD)
-
-# data.group$Study_Visit_iD == groupSelect$Study_Visit_iD
-
-(data.group$MMrisk_CLASSIFIER_ALL == as.character(vplot$targets$group)) %>% table
-
-data.group$MMrisk_CLASSIFIER_ALL_ab <- ifelse(data.group$MMrisk_CLASSIFIER_ALL=="risk2" & data.group$MMrisk_1q_all==1, 
-                                              "risk2a",
-                                              ifelse(data.group$MMrisk_CLASSIFIER_ALL=="risk2" & data.group$MMrisk_13_all ==1, 
-                                                     "risk2b", 
-                                                     data.group$MMrisk_CLASSIFIER_ALL))
-
-
-
-
-groupPlot<- data.group$MMrisk_CLASSIFIER_ALL_ab
-
-groupColors<- gsub("risk2a","red",groupPlot)
-groupColors<- gsub("risk2b","green3",groupColors)
-groupColors<- gsub("risk1","orange",groupColors)
-groupColors<- gsub("risk3","royalblue1",groupColors)
-
-
-library(gplots)
-
-DEGresults.topgenes <- DEGresults$genes.ensembl_gene_id[1:length(de.common)]
-
-i <- which(vplot$genes$genes.hgnc_symbol %in% c("CCND1","CCND2"))
-
-mycol <- colorpanel(1000,"blue","white","red")
-
-
-heatmap.2(vplot$E[i,], 
-          scale = "row",    # NB. SCALED expr values! 
-          labRow=vplot$genes$genes.hgnc_symbol[i],
-          labCol = groupPlot,
-          col= mycol,
-          # hclustfun = function(x) hclust(x, method="ward.D2"),
-          trace="none",
-          density.info="none",
-          dendrogram="column",
-          ColSideColors = groupColors)
-
-
-
-
-# clustering su gruppo 2 da solo
-
-# HEATMAP of DEG
-
-vplot<-v
-
-
-vplot2<-vplot[,vplot$targets$group=="risk2"] #exlude group R2 from plot (if present)
-table(vplot2$targets$group)
-groupPlot<-as.character(vplot2$targets$group) 
-
-
-
-
-as.character(vplot2$targets$group) %>% length()
-groupSelect$MMrisk_CLASSIFIER_ALL %>% length()
-
-(as.character(vplot2$targets$group) == groupSelect$MMrisk_CLASSIFIER_ALL) %>% table
-
-data.group <- import %>% filter(Study_Visit_iD %in% groupSelect$Study_Visit_iD, MMrisk_CLASSIFIER_ALL=="risk2")
-
-# data.group$Study_Visit_iD == groupSelect$Study_Visit_iD
-
-(data.group$MMrisk_CLASSIFIER_ALL == as.character(vplot2$targets$group)) %>% table
-
-data.group$MMrisk_CLASSIFIER_ALL_ab <- ifelse(data.group$MMrisk_CLASSIFIER_ALL=="risk2" & data.group$MMrisk_1q_all==1, 
-                                              "risk2a",
-                                              ifelse(data.group$MMrisk_CLASSIFIER_ALL=="risk2" & data.group$MMrisk_13_all ==1, 
-                                                     "risk2b", 
-                                                     data.group$MMrisk_CLASSIFIER_ALL))
-
-
-
-
-groupPlot<- data.group$MMrisk_CLASSIFIER_ALL_ab
-
-groupColors<- gsub("risk2a","red",groupPlot)
-groupColors<- gsub("risk2b","green3",groupColors)
-groupColors<- gsub("risk1","orange",groupColors)
-groupColors<- gsub("risk3","royalblue1",groupColors)
-
-
-library(gplots)
-
-DEGresults.topgenes <- DEGresults$genes.ensembl_gene_id[1:length(de.common)]
-
-i <- which(vplot$genes$genes.hgnc_symbol %in% c("CCND1","CCND2"))
-
-mycol <- colorpanel(1000,"blue","white","red")
-
-
-heatmap.2(vplot2$E[i,], 
-          scale = "row",    # NB. SCALED expr values! 
-          labRow=vplot$genes$genes.hgnc_symbol[i],
-          labCol = groupPlot,
-          col= mycol,
-          # hclustfun = function(x) hclust(x, method="ward.D2"),
-          trace="none",
-          density.info="none",
-          dendrogram="column",
-          ColSideColors = groupColors)
-
-
-
-# clustering su gruppo 1 + gruppo 3
-
-# HEATMAP of DEG
-
-vplot<-v
-
-
-vplot1.3<-vplot[,vplot1.3$targets$group!="risk2"] #exlude group R2 from plot (if present)
-table(vplot1.3$targets$group)
-groupPlot<-as.character(vplot1.3$targets$group) 
-
-
-
-
-as.character(vplot1.3$targets$group) %>% length()
-groupSelect$MMrisk_CLASSIFIER_ALL %>% length()
-
-(as.character(vplot1.3$targets$group) == groupSelect$MMrisk_CLASSIFIER_ALL) %>% table
-
-data.group <- import %>% filter(Study_Visit_iD %in% groupSelect$Study_Visit_iD, MMrisk_CLASSIFIER_ALL!="risk2")
-
-# data.group$Study_Visit_iD == groupSelect$Study_Visit_iD
-
-(data.group$MMrisk_CLASSIFIER_ALL == as.character(vplot1.3$targets$group)) %>% table
-
-data.group$MMrisk_CLASSIFIER_ALL_ab <- ifelse(data.group$MMrisk_CLASSIFIER_ALL=="risk2" & data.group$MMrisk_1q_all==1, 
-                                              "risk2a",
-                                              ifelse(data.group$MMrisk_CLASSIFIER_ALL=="risk2" & data.group$MMrisk_13_all ==1, 
-                                                     "risk2b", 
-                                                     data.group$MMrisk_CLASSIFIER_ALL))
-
-
-
-
-groupPlot<- data.group$MMrisk_CLASSIFIER_ALL_ab
-
-groupColors<- gsub("risk2a","red",groupPlot)
-groupColors<- gsub("risk2b","green3",groupColors)
-groupColors<- gsub("risk1","orange",groupColors)
-groupColors<- gsub("risk3","royalblue1",groupColors)
-
-
-library(gplots)
-
-DEGresults.topgenes <- DEGresults$genes.ensembl_gene_id[1:length(de.common)]
-
-i <- which(vplot$genes$genes.hgnc_symbol %in% c("CCND1","CCND2"))
-
-mycol <- colorpanel(1000,"blue","white","red")
-
-
-heatmap.2(vplot1.3$E[i,], 
-          scale = "row",    # NB. SCALED expr values! 
-          labRow=vplot$genes$genes.hgnc_symbol[i],
-          labCol = groupPlot,
-          col= mycol,
-          # hclustfun = function(x) hclust(x, method="ward.D2"),
-          trace="none",
-          density.info="none",
-          dendrogram="column",
-          ColSideColors = groupColors)
 
