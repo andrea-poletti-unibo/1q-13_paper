@@ -71,7 +71,6 @@ genelist<-importCounts$GENE_ID #create commpass gene list
 listEnsembl()
 listEnsembl(version=105) # use version 105 for reproducibility
 
-
 ensembl105 = useEnsembl(biomart="ensembl", version=105, dataset = "hsapiens_gene_ensembl")
 
 gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
@@ -95,8 +94,9 @@ names(importCounts)[1]<-"ensembl_gene_id"
 mergedInfoCounts<- left_join(gene_coords_105, importCounts, by = "ensembl_gene_id") # NB! observations (genes) are reduced
 
 
-
 # 2.2 _____________ Select only DIAGNOSIS samples from CoMMpass _______________
+
+
 onlyDiagnosis<- dplyr::select(mergedInfoCounts, contains("_1_BM")) 
 
 samplenamesD<-names(onlyDiagnosis)
@@ -390,6 +390,8 @@ strictNum <- length(which(dt[,1]!=0))
 tabStrict<- topTreat(tfit, coef=1, sort.by = "p", number=strictNum) # SET the correct number of strict DEG genes !
 
 
+
+
 # **PLOT> volcano plot of STRICT DEG**
 pdf("plots/DEG_analysis/volcano_500_strict-DEG.pdf", width = 9, height = 7)
 volcanoplot(tfit,coef = 1, highlight = strictNum, names= tfit$genes$genes.hgnc_symbol) # SET the correct number of strict DEG genes
@@ -440,6 +442,8 @@ plotMD(tfit, column=1, status=dt[,1], main=colnames(tfit)[1], xlim=c(-8,13))
 # Glimma interactive MD plot 
 glMDPlot(tfit, coef=1, status=dt, main=colnames(tfit)[1], path = "results/DEG_analysis/", 
          side.main="genes.hgnc_symbol", counts=x$counts, groups=group, launch=F ) # Glimma INTERACTIVE
+
+
 
 
 
@@ -557,6 +561,7 @@ dev.off()
 #_______ DEF HEATMAP IN PAPER _______
 
 
+
 GENES <-c("CCND1","CCND2","CCND3","NSD2","FGFR3", "MAF", "MAFB")
 
 i <- which(vplot$genes$genes.hgnc_symbol %in% GENES)
@@ -645,8 +650,6 @@ import_pts$event_CCND1 <- ifelse(import_pts$SeqWGS_CCND1_CALL == 1 | import_pts$
 
 import_pts$event_CCND1 %>% table
 table(import_pts$MMrisk_CLASSIFIER_ALL, import_pts$event_CCND1) # percentqage of 1q&13+ that carries a t involving CCND2
-
-
 
 
 
