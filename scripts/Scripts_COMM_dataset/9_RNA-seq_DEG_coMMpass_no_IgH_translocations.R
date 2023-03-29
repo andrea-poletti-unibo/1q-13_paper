@@ -465,13 +465,7 @@ glMDPlot(tfit, coef=1, status=dt, main=colnames(tfit)[1], path = "results/DEG_an
 
 
 
-
-# 5.0____________________ SAVE vplot RDATA __________________
-
-saveRDS(v, "workfiles/vplot_DEG_CoMMpass_noT.rds")
-
-
-# 6.0____________________ PAPER PLOTS ____________________
+# 5.0____________________ PAPER PLOTS ____________________
 
 # Volcano plot of strict DEG 
 
