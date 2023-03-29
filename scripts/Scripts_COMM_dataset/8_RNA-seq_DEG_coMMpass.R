@@ -41,6 +41,8 @@ dir.create(path, showWarnings = F, recursive = T)
 
 opts_knit$set(root.dir = path)
 
+dir.create("plots/DEG_analysis/", recursive = T, showWarnings = F)
+
 
 
 # load GENE COUNT trascriptome data from CoMMpass RNA-seq
@@ -70,14 +72,6 @@ listEnsembl()
 listEnsembl(version=105) # use version 105 for reproducibility
 
 
-# human <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
-# 
-# gene_coords=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
-#                   filters="ensembl_gene_id",
-#                   values=genelist, #download the additional annotation for the compass gene list
-#                   mart=human)
-
-
 ensembl105 = useEnsembl(biomart="ensembl", version=105, dataset = "hsapiens_gene_ensembl")
 
 gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
@@ -89,7 +83,7 @@ gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_posit
 saveRDS(gene_coords_105, "workfiles/bioMart_genes_annot.RData")
 
 #import "bioMart_genes_annot.RData" prepared file if no internet connection available 
-# gene_coords <- readRDS("workfiles/bioMart_genes_annot.RData")
+# gene_coords_105 <- readRDS("workfiles/bioMart_genes_annot.RData")
 
 #creation of length variable
 gene_coords_105$length = gene_coords_105$end_position - gene_coords_105$start_position
@@ -98,42 +92,16 @@ gene_coords_105$length = gene_coords_105$end_position - gene_coords_105$start_po
 names(importCounts)[1]<-"ensembl_gene_id"
 
 #merge the import file with the new downloaded annotations
-mergedInfoCounts<- left_join(gene_coords_105, importCounts, by = "ensembl_gene_id") # NB! FROM 57997 genes TO 52460 genes
+mergedInfoCounts<- left_join(gene_coords_105, importCounts, by = "ensembl_gene_id") # NB! observations (genes) are reduced
 
 
 
-
-# 2.2  Select only DIAGNOSIS samples from CoMMpass 
+# 2.2 _____________ Select only DIAGNOSIS samples from CoMMpass _______________
 onlyDiagnosis<- dplyr::select(mergedInfoCounts, contains("_1_BM")) 
 
 samplenamesD<-names(onlyDiagnosis)
 
 prepData<- onlyDiagnosis # CREATION of prepData object
-
-
-
-
-# 2.2b _______ [OPTIONAL] Exclude samples with translocations involving cycline deregulations ________
-# t_import <- import %>% filter(SeqWGS_WHSC1_CALL == 1 | SeqWGS_CCND1_CALL==1 | SeqWGS_CCND3_CALL ==1 | SeqWGS_MAF_CALL==1 | SeqWGS_MAFB_CALL==1)
-# t_import$SeqWGS_WHSC1_CALL + t_import$SeqWGS_CCND1_CALL + t_import$SeqWGS_CCND3_CALL + t_import$SeqWGS_MAF_CALL + t_import$SeqWGS_MAFB_CALL
-# 
-# drops <- t_import$Study_Visit_iD
-# 
-# filtered<-prepData[, !(names(prepData) %in% drops)] #exclude translocated patients from prepData
-# 
-# #checks
-# sum(names(filtered)%in% drops)
-# sum(names(filtered)%in%names(prepData)==F)
-# samplenamesDnoT<-names(filtered)
-# 
-# prepData<-filtered # !!! SAVE prepData !!!
-
-# # 2.2c _________ [OPTIONAL] others sample type filtering steps ____________
-# #define the condition for keeping samples
-# keep<- dplyr::filter(groupImport, groupImport$`1q` == 0) %>% dplyr::select(sample) %>% unlist()
-# 
-# prepData<- prepData[, names(prepData) %in% keep]
-
 
 
 
@@ -393,7 +361,6 @@ plotSA(efit)
 summary(decideTests(efit))
 
 tab= topTable(efit, coef = 1, number=1000, adjust.method = "BH")
-# View(tab)
 
 topGenes<- tab[tab[,"adj.P.Val"]< 0.001,]
 
@@ -421,11 +388,9 @@ summary(dt)
 strictNum <- length(which(dt[,1]!=0))
 
 tabStrict<- topTreat(tfit, coef=1, sort.by = "p", number=strictNum) # SET the correct number of strict DEG genes !
-# View(tabStrict)
 
 
 # **PLOT> volcano plot of STRICT DEG**
-dev.off()
 pdf("plots/DEG_analysis/volcano_500_strict-DEG.pdf", width = 9, height = 7)
 volcanoplot(tfit,coef = 1, highlight = strictNum, names= tfit$genes$genes.hgnc_symbol) # SET the correct number of strict DEG genes
 title(main="Volcano plot of STRICT (fold-change>2) deregulated genes")
@@ -465,10 +430,6 @@ DEGresults<- topTreat(tfit, coef=1, n=Inf)
 write.fit(tfit, dt, file=paste0("results/DEG_analysis/DEG_results_",NAME,".txt")) # analysis result
 write_tsv(tabStrict,paste0("results/DEG_analysis/DEG_genes_",NAME,".txt")) # strict DE list
 
-# no traslocation 
-# write.fit(tfit, dt, file=paste0("DEG_results_noT_",NAME,".txt")) # analysis result
-# write_tsv(tabStrict,paste0("DEG_genes_noT_",NAME,".txt")) # strict DE list
-
 
 # 4.7 ________Useful graphical representations of differential expression results ________
 # **PLOT> MD plot of STRICT DEG by limma**
@@ -485,7 +446,7 @@ glMDPlot(tfit, coef=1, status=dt, main=colnames(tfit)[1], path = "results/DEG_an
 
 # 5.0____________________ SAVE vplot RDATA __________________
 
-saveRDS(vplot, "workfiles/vplot_DEG_CoMMpass.rds")
+saveRDS(v, "workfiles/vplot_DEG_CoMMpass.rds")
 
 
 # 6.0____________________ PAPER PLOTS ____________________
@@ -521,11 +482,8 @@ df %>% ggplot(aes(x = log2_FoldChange, y = neg_log10_pvalue)) + geom_point(aes(c
   ylab("-log10(p-value)")
 
 
-dir.create("plots/DEG_analysis/", recursive = T, showWarnings = F)
 ggsave("plots/DEG_analysis/Volcano_plot_strict_DEG.pdf", device = "pdf", width = 8, height = 7)
 
-# no trasnlocations
-# ggsave("../../plots/DEG_analysis/Volcano_plot_strict_DEG_noT.pdf", device = "pdf", width = 8, height = 7)
 
 
 
@@ -604,7 +562,6 @@ dev.off()
 
 #_______ DEF HEATMAP IN PAPER _______
 
-GENES <-c("CCND1","CCND2","CCND3") # no traslocations
 
 GENES <-c("CCND1","CCND2","CCND3","NSD2","FGFR3", "MAF", "MAFB")
 
@@ -694,97 +651,6 @@ import_pts$event_CCND1 <- ifelse(import_pts$SeqWGS_CCND1_CALL == 1 | import_pts$
 
 import_pts$event_CCND1 %>% table
 table(import_pts$MMrisk_CLASSIFIER_ALL, import_pts$event_CCND1) # percentqage of 1q&13+ that carries a t involving CCND2
-
-
-
-
-
-
-
-
-GENES <-c("CCND1","CCND2","CCND3") # no traslocations
-
-GENES <-c("CCND1","CCND2","CCND3","NSD2","FGFR3", "MAF", "MAFB")
-
-i <- which(vplot$genes$genes.hgnc_symbol %in% GENES)
-
-mat <- vplot$E[i,]
-rownames(mat) <- vplot$genes$genes.hgnc_symbol[i]
-
-
-
-anno <- data.frame(
-  group_1q_13= import_pts$MMrisk_CLASSIFIER_ALL %>% as.factor(),
-  cyclin_cluster=CLUST %>% as.factor(),
-  t_4_14=import_pts$SeqWGS_WHSC1_CALL %>% as.factor(),
-  t_11_14=import_pts$SeqWGS_CCND1_CALL %>% as.factor(),
-  t_6_14=import_pts$SeqWGS_CCND3_CALL %>% as.factor(),
-  t_14_16=import_pts$SeqWGS_MAF_CALL %>% as.factor(),
-  t_14_20=import_pts$SeqWGS_MAFB_CALL %>% as.factor(),
-  amp1q=import_pts$MMrisk_1q_all %>% as.factor(),
-  del13=import_pts$MMrisk_13_all %>% as.factor(),
-  HD= import_pts$HyperDiploidy %>% as.factor()
-)
-rownames(anno) <- PTS
-
-
-
-anno_colors = list(
-  group_1q_13 = c(`1q&13+` = "orangered", `1q&13-` = "turquoise3", `1q/13` = "grey60"),
-  cyclin_cluster =  c(`CCND1` = "#66c2a5", `CCND2` = "#fc8d62", `CCND3`="#8da0cb"),
-  t_4_14 = c(`1` = "purple", `0` = "grey80"),
-  t_11_14= c(`1` = "purple", `0` = "grey80"),
-  t_6_14= c(`1` = "purple", `0` = "grey80"),
-  t_14_16= c(`1` = "purple", `0` = "grey80"),
-  t_14_20= c(`1` = "purple", `0` = "grey80"),
-  amp1q=   c(`1` = "green", `0` = "grey80"),
-  del13=   c(`1` = "red", `0` = "grey80"),
-  HD= c(`1` = "blue", `0` = "grey80")
-)
-
-
-pheatmap(mat, 
-         clustering_method = "ward.D2",
-         scale = "row", 
-         cluster_rows = F,
-         annotation_col = anno,
-         annotation_colors = anno_colors, 
-         show_colnames = F,
-         cellheight = 40,
-         width = 16,
-         height = 8
-)
-
-
-# # SAVE
-# pheatmap(mat, 
-#          clustering_method = "ward.D2",
-#          scale = "row", 
-#          cluster_rows = F,
-#          annotation_col = anno,
-#          annotation_colors = anno_colors, 
-#          show_colnames = F,
-#          cellheight = 40,
-#          filename = "C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/PAPER_FIGURES_OFFICIAL/DEG_analysis/annotated_genes_heatmap.pdf",
-#          width = 16,
-#          height = 8
-#          )
-
-
-
-# # SAVE no traslocations
-# pheatmap(mat,
-#          clustering_method = "ward.D2",
-#          scale = "row",
-#          cluster_rows = F,
-#          annotation_col = anno,
-#          annotation_colors = anno_colors,
-#          show_colnames = F,
-#          cellheight = 40,
-#          filename = "C:/Users/andre/Alma Mater Studiorum Università di Bologna/PROJECT 1q & 13 - Documenti/PAPER_FIGURES_OFFICIAL/DEG_analysis/annotated_genes_heatmap_no_trasloc.pdf",
-#          width = 16,
-#          height = 8
-#          )
 
 
 
