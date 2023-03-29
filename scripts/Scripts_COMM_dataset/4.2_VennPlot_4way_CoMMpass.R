@@ -56,7 +56,7 @@ venndf_complete %>% names
 venndf_complete <- venndf_complete %>% select(`Amp 1q`,HyperDiploidy,`IgH Translocation`,`Del 13q`)
 
 ggvenn(venndf_complete, 
-       fill_color = c("#1C86EE","#458B00",   "#BF3EFF","#FF3030"),
+       fill_color = c("#1C86EE","#458B00","#BF3EFF","#FF3030"),
        fill_alpha = 0.5,
        set_name_size = 5) + 
   annotate(geom = "text", label="CoMMpass dataset", x=-1.44, y=1.6, size=5)
