@@ -21,7 +21,7 @@ segm %>% ggplot(aes(abs.CN_scaled, weight = Num.markers)) + geom_density() + xli
 
 
 # import focal genes
-foc_genes <- readxl::read_xlsx("input_data/focal_genes_panel_1q&13.xlsx") 
+foc_genes <- readxl::read_xlsx("data/focal_genes_panel_1q&13.xlsx") 
 
 # create samples vector and SORT IT (CRITICAL!)
 samples <- segm$Sample %>% unique %>% sort

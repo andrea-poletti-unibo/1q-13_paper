@@ -4,7 +4,7 @@ library(tidyverse)
 
 
 # import gistic arm calls (in integer CN)
-GISTIC_armCN <- fread("input_data/GISTIC_run175814_CoMMpass/jointsize50.broad_values_by_arm.txt")
+GISTIC_armCN <- fread("data/GISTIC_run175814_CoMMpass/jointsize50.broad_values_by_arm.txt")
 
 # transpose and rename column
 armsCN <- t(as.matrix(GISTIC_armCN, rownames=1)) %>% as.data.frame

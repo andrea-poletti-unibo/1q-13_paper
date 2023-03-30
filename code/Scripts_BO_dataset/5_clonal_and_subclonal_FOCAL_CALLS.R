@@ -11,7 +11,7 @@ segm <- fread("results/IGV_files/IGV_Rawsegm_medianCentered_Scaled.seg")
 segm %>% ggplot(aes(seg.mean_medAdj, weight = num.mark)) + geom_density() + xlim(-2,2) + geom_vline(xintercept = -1, colour="blue") + geom_vline(xintercept = 1, colour="red")
 
 # import focal genes
-foc_genes <- readxl::read_xlsx("input_data/focal_genes_panel_1q&13.xlsx") 
+foc_genes <- readxl::read_xlsx("data/focal_genes_panel_1q&13.xlsx") 
 
 # create samples vector and SORT IT (CRITICAL!)
 samples <- segm$ID %>% unique %>% sort

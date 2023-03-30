@@ -12,7 +12,7 @@ for( b in batches_names){
   
   message(b)
   
-  results <- fread(paste0("input_data/ASCAT/batch",b, "_ASCAT.results_table.csv"))
+  results <- fread(paste0("data/ASCAT/batch",b, "_ASCAT.results_table.csv"))
   
   # ploidy / purity exploration and visualization
   gg <- results %>% ggplot(aes(x = ascat.output.aberrantcellfraction, y = ascat.output.ploidy, color=ascat.output.ploidy>3.5)) + 
@@ -33,7 +33,7 @@ for( b in batches_names){
   
   
   # import segments
-  segm <- fread(paste0("input_data/ASCAT/batch",b,"adj_fitted_and_raw_segments.tsv"))
+  segm <- fread(paste0("data/ASCAT/batch",b,"adj_fitted_and_raw_segments.tsv"))
   
   segm$name <- segm$sample %>% str_replace("_\\.CytoScanHD_Array","") 
   

@@ -5,7 +5,7 @@ library(data.table)
 
 #_____import the excel (from Cinzia) with FISH and clincal data______
 
-FISH_CLIN <- fread("input_data/clinical_data_BOLO_210122_anonim.txt")
+FISH_CLIN <- fread("data/clinical_data_BOLO_210122_anonim.txt")
 
 
 #_____import the prepared CNA calls of DELs and AMPs from GISTIC run (broad and focal)______

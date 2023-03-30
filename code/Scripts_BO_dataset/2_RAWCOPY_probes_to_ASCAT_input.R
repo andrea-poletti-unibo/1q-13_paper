@@ -17,8 +17,8 @@ segm6.0 <- fread("workfiles/ASCAT_refitting/refitted_ASCAT_segments_batchSNP6.ts
 #======= Counting of number of probes per segment (required for GISTIC format) ===========
 
 # import PROBES INFO for both types of arrays (pre-generated from rawcopy)
-probesHD <- fread("input_data/info_files/probePos_HD.txt")
-probes6.0 <- fread("input_data/info_files/probePos_SNP6.txt")
+probesHD <- fread("data/info_files/probePos_HD.txt")
+probes6.0 <- fread("data/info_files/probePos_SNP6.txt")
 
 
 # transform data in Granges

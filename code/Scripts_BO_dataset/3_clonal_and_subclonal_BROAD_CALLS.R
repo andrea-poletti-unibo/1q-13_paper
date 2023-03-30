@@ -4,7 +4,7 @@ library(tidyverse)
 
 # import gistic arm calls (in integer CN)
 
-GISTIC_armCN <- fread("input_data/GISTIC_run132274/validrun1.broad_values_by_arm.txt")
+GISTIC_armCN <- fread("data/GISTIC_run132274/validrun1.broad_values_by_arm.txt")
 
 
 # transpose and rename column

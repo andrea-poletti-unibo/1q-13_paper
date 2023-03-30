@@ -33,20 +33,20 @@ import$MMrisk_CLASSIFIER_ALL <- dplyr::recode(as.character(import$MMrisk_CLASSIF
 # define the dataframe with group assignments    
 compassGroup <- import %>% dplyr::select(Study_Visit_iD,MMrisk_CLASSIFIER_ALL) 
 
-NAME<-"CoMMpass_risk1_vs_risk3" # set name of analysis
+NAME<-"CoMMpass_risk1_vs_risk3_noT" # set name of analysis
 
-path <- "results/DEG_analysis/"
+path <- "results/DEG_analysis/no_trasnlocations/"
 
 dir.create(path, showWarnings = F, recursive = T)
 
 opts_knit$set(root.dir = path)
 
-dir.create("plots/DEG_analysis/", recursive = T, showWarnings = F)
+dir.create("plots/DEG_analysis/no_translocations/", recursive = T, showWarnings = F)
 
 
 
 # load GENE COUNT trascriptome data from CoMMpass RNA-seq
-importCounts <- fread("input_data/CoMMpass/MMRF_CoMMpass_IA13a_E74GTF_Salmon_Gene_Counts.txt.gz") # import gene counts data
+importCounts <- fread("data/CoMMpass/MMRF_CoMMpass_IA13a_E74GTF_Salmon_Gene_Counts.txt.gz") # import gene counts data
 
 # define the dataframe with group assignments
 groupImport<- compassGroup
@@ -74,9 +74,9 @@ listEnsembl(version=105) # use version 105 for reproducibility
 ensembl105 = useEnsembl(biomart="ensembl", version=105, dataset = "hsapiens_gene_ensembl")
 
 gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
-                  filters="ensembl_gene_id",
-                  values=genelist, #download the additional annotation for the compass gene list
-                  mart=ensembl105)
+                      filters="ensembl_gene_id",
+                      values=genelist, #download the additional annotation for the compass gene list
+                      mart=ensembl105)
 
 
 saveRDS(gene_coords_105, "workfiles/bioMart_genes_annot.RData")
@@ -94,9 +94,9 @@ names(importCounts)[1]<-"ensembl_gene_id"
 mergedInfoCounts<- left_join(gene_coords_105, importCounts, by = "ensembl_gene_id") # NB! observations (genes) are reduced
 
 
-# 2.2 _____________ Select only DIAGNOSIS samples from CoMMpass _______________
 
 
+# 2.2  Select only DIAGNOSIS samples from CoMMpass 
 onlyDiagnosis<- dplyr::select(mergedInfoCounts, contains("_1_BM")) 
 
 samplenamesD<-names(onlyDiagnosis)
@@ -105,16 +105,36 @@ prepData<- onlyDiagnosis # CREATION of prepData object
 
 
 
+
+# 2.2b _______ Exclude samples with translocations involving cycline deregulations ________
+t_import <- import %>% filter(SeqWGS_WHSC1_CALL == 1 | SeqWGS_CCND1_CALL==1 | SeqWGS_CCND3_CALL ==1 | SeqWGS_MAF_CALL==1 | SeqWGS_MAFB_CALL==1)
+t_import$SeqWGS_WHSC1_CALL + t_import$SeqWGS_CCND1_CALL + t_import$SeqWGS_CCND3_CALL + t_import$SeqWGS_MAF_CALL + t_import$SeqWGS_MAFB_CALL
+
+drops <- t_import$Study_Visit_iD
+
+filtered<-prepData[, !(names(prepData) %in% drops)] #exclude translocated patients from prepData
+
+#checks
+sum(names(filtered)%in% drops)
+sum(names(filtered)%in%names(prepData)==F)
+samplenamesDnoT<-names(filtered)
+
+prepData<-filtered # !!! SAVE prepData !!!
+
+767 - 505
+
+dim(prepData) # 505 samples in the analysis / 262 diagnosis samples with IgH translocations excluded! 
+
+
+
 # 2.3 ________ define GROUP variable in order to perform differential expression analysis between groups ________
 
 groupSelect<- dplyr::filter(groupImport, Study_Visit_iD %in% names(prepData)) # select the name list to filter
 
-
 samplewithgroup<- groupSelect$Study_Visit_iD
-## groupCheck<-filter(groupImport, sample %in% samplewithgroup)
 
 #excluding samples without a group
-onlyGroup<- dplyr::select(prepData, samplewithgroup)
+onlyGroup<- dplyr::select(prepData, samplewithgroup) # 393 samples with a 1q&13 group
 
 prepData<-cbind(mergedInfoCounts[,c(1,2,5)],onlyGroup) # !!! SAVE prepData !!! + add 3 gene annotations cols 
 
@@ -212,7 +232,7 @@ table(keep.exprs)
 
 # keep.exprs
 # FALSE  TRUE 
-# 32168 19922 
+# 33334 18756
 
 x<-x[keep.exprs, keep.lib.sizes=FALSE]
 dim(x)
@@ -275,8 +295,6 @@ head(x$samples$norm.factors, n=20)
 
 # 4.1________ Multi Dimensional Scaling (MDS) analysis plot (~PCA of the groups)________
 
-library(limma)
-
 # (search initial global evidence for a differential expression between groups)
 lcpm <- cpm(x, log=TRUE)
 
@@ -285,7 +303,7 @@ lcpm <- cpm(x, log=TRUE)
 
 # # MDS PLOT
 
-pdf("plots/DEG_analysis/limma_gene_expression_MDS.pdf", width = 10, height = 5)
+pdf("plots/DEG_analysis/no_translocations/limma_gene_expression_MDS_noT.pdf", width = 10, height = 5)
 
 par(mfrow=c(1,2))
 col.group <- group
@@ -303,14 +321,14 @@ plotMDS(lcpm, #labels=group,
         col=col.group,
         dim=c(2,3)) # plot dimension 2 vs dimension 3
 
-title(main="Limma gene expression MDS plot")
+title(main="Limma gene expression MDS plot - no IgH translocations")
 
 dev.off()
 
 # **PLOT> MDS INTERACTIVE plot with Glimma**
 
 # Glimma interactive MDS viz - ALL dimensions
-glMDSPlot(lcpm, labels="group", groups=x$samples$group, path = "results/DEG_analysis/",
+glMDSPlot(lcpm, labels="group", groups=x$samples$group, path = "results/DEG_analysis/no_trasnlocations/",
           launch=F) #launch = TRUE opens the plot in a browser
 
 
@@ -361,15 +379,16 @@ plotSA(efit)
 summary(decideTests(efit))
 
 tab= topTable(efit, coef = 1, number=1000, adjust.method = "BH")
+# View(tab)
 
 topGenes<- tab[tab[,"adj.P.Val"]< 0.001,]
 
 
 # **PLOT> volcano plot of DEG (p<0.05)**
 dev.off()
-pdf("plots/DEG_analysis/volcano_500_DEG.pdf", width = 9, height = 7)
+pdf("plots/DEG_analysis/no_translocations/volcano_500_DEG_noT.pdf", width = 9, height = 7)
 volcanoplot(efit,coef = 1, highlight = 500, names=efit$genes$genes.hgnc_symbol)
-title(main="Volcano plot of top 500 deregulated genes")
+title(main="Volcano plot of top 500 deregulated genes - no T")
 dev.off()
 
 
@@ -388,14 +407,14 @@ summary(dt)
 strictNum <- length(which(dt[,1]!=0))
 
 tabStrict<- topTreat(tfit, coef=1, sort.by = "p", number=strictNum) # SET the correct number of strict DEG genes !
-
-
+# View(tabStrict)
 
 
 # **PLOT> volcano plot of STRICT DEG**
-pdf("plots/DEG_analysis/volcano_500_strict-DEG.pdf", width = 9, height = 7)
+dev.off()
+pdf("plots/DEG_analysis/no_translocations/volcano_500_strict-DEG_noT.pdf", width = 9, height = 7)
 volcanoplot(tfit,coef = 1, highlight = strictNum, names= tfit$genes$genes.hgnc_symbol) # SET the correct number of strict DEG genes
-title(main="Volcano plot of STRICT (fold-change>2) deregulated genes")
+title(main="Volcano plot of STRICT (fold-change>2) deregulated genes - no T")
 dev.off()
 
 
@@ -429,8 +448,9 @@ DEGresults<- topTreat(tfit, coef=1, n=Inf)
 
 
 # 4.6 ________ EXPORT the strict DE gene list and the analysis results ________
-write.fit(tfit, dt, file=paste0("results/DEG_analysis/DEG_results_",NAME,".txt")) # analysis result
-write_tsv(tabStrict,paste0("results/DEG_analysis/DEG_genes_",NAME,".txt")) # strict DE list
+write.fit(tfit, dt, file=paste0("results/DEG_analysis/no_trasnlocations/DEG_results_",NAME,"_noT.txt")) # analysis result
+write_tsv(tabStrict,paste0("results/DEG_analysis/no_trasnlocations/DEG_genes_",NAME,"_noT.txt")) # strict DE list
+
 
 
 # 4.7 ________Useful graphical representations of differential expression results ________
@@ -440,10 +460,8 @@ plotMD(tfit, column=1, status=dt[,1], main=colnames(tfit)[1], xlim=c(-8,13))
 
 # **PLOT> MD plot of STRICT DEG by Glimma**
 # Glimma interactive MD plot 
-glMDPlot(tfit, coef=1, status=dt, main=colnames(tfit)[1], path = "results/DEG_analysis/", 
+glMDPlot(tfit, coef=1, status=dt, main=colnames(tfit)[1], path = "results/DEG_analysis/no_trasnlocations/", 
          side.main="genes.hgnc_symbol", counts=x$counts, groups=group, launch=F ) # Glimma INTERACTIVE
-
-
 
 
 
@@ -480,8 +498,7 @@ df %>% ggplot(aes(x = log2_FoldChange, y = neg_log10_pvalue)) + geom_point(aes(c
   ylab("-log10(p-value)")
 
 
-ggsave("plots/DEG_analysis/Volcano_plot_strict_DEG.pdf", device = "pdf", width = 8, height = 7)
-
+ggsave("plots/DEG_analysis/no_translocations/Volcano_plot_strict_DEG_noT.pdf", device = "pdf", width = 8, height = 7)
 
 
 
@@ -553,16 +570,14 @@ ph <- pheatmap(mat_c,
                annotation_col = anno,
                color=colorRampPalette(c("navy", "white", "red"))(50),
                width = 12, height = 3,
-               filename = "plots/DEG_analysis/Cyclin_clusters.pdf")
+               filename = "plots/DEG_analysis/no_translocations/Cyclin_clusters_noT.pdf")
 dev.off()
 
 
 
 #_______ DEF HEATMAP IN PAPER _______
 
-
-
-GENES <-c("CCND1","CCND2","CCND3","NSD2","FGFR3", "MAF", "MAFB")
+GENES <-c("CCND1","CCND2","CCND3") # no traslocations
 
 i <- which(vplot$genes$genes.hgnc_symbol %in% GENES)
 
@@ -601,9 +616,8 @@ anno_colors = list(
   HD_chr11q= c(`1` = "blue", `0` = "grey80")
 )
 
-mat_r <- mat[c(3,5,4,1,2,6,7),]
 
-pheatmap(mat_r, 
+pheatmap(mat, 
          clustering_method = "ward.D2",
          scale = "row", 
          cluster_rows = F,
@@ -617,7 +631,7 @@ pheatmap(mat_r,
 )
 
 
-pheatmap(mat_r, 
+pheatmap(mat, 
          clustering_method = "ward.D2",
          scale = "row", 
          cluster_rows = F,
@@ -626,9 +640,9 @@ pheatmap(mat_r,
          show_colnames = F,
          cellheight = 40,
          width = 16,
-         height = 8,
+         height = 14,
          color=colorRampPalette(c("navy", "white", "red"))(50), 
-         filename = "plots/DEG_analysis/annotated_genes_heatmap.pdf"
+         filename = "plots/DEG_analysis/no_translocations/annotated_genes_heatmap_noT.pdf"
 )
 dev.off()
 
@@ -661,7 +675,6 @@ table <- gmodels::CrossTable(anno$group_1q_13, anno$cyclin_cluster, prop.chisq =
 table_df <- table$t %>% as.data.frame.matrix()
 table_plot <- table$t %>% as.data.frame
 table_plot %>% ggplot(aes(y,Freq, fill=x)) + geom_bar(stat = "identity", position = "dodge")
-
 
 
 #___ table 2____
@@ -717,21 +730,4 @@ summary(m)
 
 m <- glm(cyclin_cluster_CCND3~`group_1q_13_1q/13`, family="binomial", data=anno_df)
 summary(m)
-
-
-library(kableExtra)
-
-table_df %>% kbl(caption = "1q&13 groups and Cyclin D clusters") %>%
-  kable_classic(full_width = F, html_font = "Cambria") %>% 
-  footnote( general_title = "Pearson χ² test p < 0.0001", general = "", footnote_as_chunk = T)
-
-# webshot::install_phantomjs()
-# 
-# table_df %>% kbl(caption = "1q&13 groups and Cyclin D clusters") %>%
-#   kable_classic(full_width = F, html_font = "Cambria") %>% 
-#   footnote( general_title = "Pearson χ² test p < 0.0001", general = "", footnote_as_chunk = T) %>% 
-#   save_kable( "results/DEG_analysis/table_MMrisk_CyclinClusters.pdf",vwidth=500, vheight=300)
-
-
-
 

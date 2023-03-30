@@ -5,8 +5,8 @@ library(tidyverse)
 # https://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideTEXT.htm#_False_Discovery_Rate 
 
 
-neg <- data.table::fread("input_data/GSEA_results/neg_regulated_pathways.txt")
-pos <- data.table::fread("input_data/GSEA_results/pos_regulated_pathways.txt")
+neg <- data.table::fread("data/GSEA_results/neg_regulated_pathways.txt")
+pos <- data.table::fread("data/GSEA_results/pos_regulated_pathways.txt")
 
 neg$class <- "negatively deregulated"
 pos$class <- "positively deregulated"

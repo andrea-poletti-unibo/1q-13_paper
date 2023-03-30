@@ -4,7 +4,7 @@ library(data.table)
 
 #_____import the txt file from portal with CoMMpass clinical and FISH data______
 
-FISH_CLIN <- fread("input_data/clinical_data_COMMPASS-IA13_210122.txt")
+FISH_CLIN <- fread("data/clinical_data_COMMPASS-IA13_210122.txt")
 
 #_____import the prepared CNA calls of DELs and AMPs from GISTIC run (broad and focal)______
 

@@ -8,7 +8,7 @@ library(tidyverse)
 
 #__________ data import e prep__________
 
-import <- fread("input_data/CoMMpass/MMRF_CoMMpass_IA13a_CNA_LongInsert.seg") # load Compass Segment data 
+import <- fread("data/CoMMpass/MMRF_CoMMpass_IA13a_CNA_LongInsert.seg") # load Compass Segment data 
 
 # filter per first visit (1_BM in sample name)
 
