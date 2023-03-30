@@ -1,5 +1,3 @@
-
-
 library(data.table)
 library(tidyverse)
 library(survival)
@@ -8,7 +6,6 @@ library(RODBC)
 library(broom)
 options(scipen=999)
 
-
 #______import clinical data already created by 230321
 import <- data.table::fread("results/complete_database_BO_1q_13.txt") %>% as.data.frame()
 names(import)
@@ -16,9 +13,7 @@ names(import)
 outpath <- "results/Clinical_anlysis/BO_dataset/"
 dir.create(outpath,recursive = T)
 
-
 write_tsv(data.frame("Univariate"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-
 
 ################################################
 # INDEX:                                       #
@@ -32,7 +27,6 @@ write_tsv(data.frame("Univariate"),paste0(outpath,"report_cox_analysis.txt"), ap
 # 4._______OLD MULTIVARIATE__________          #
 # 5.______MULTIVARIATE REVISED 2401            #
 ################################################
-
 
 
 #1._____ MM RISK CREATION _____
