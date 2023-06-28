@@ -1,7 +1,7 @@
 library(tidyverse)
 
-ai_bolo <- data.table::fread("workfiles/AncestralityIndex_table_BO.txt")
-ai_comm <- data.table::fread("workfiles/AncestralityIndex_table_CoMMpass.txt")
+ai_bolo <- data.table::fread("workfiles/DrivernessIndex_table_BO.txt")
+ai_comm <- data.table::fread("workfiles/DrivernessIndex_table_CoMMpass.txt")
 
 ai_bolo$alteration %>% sort == ai_comm$alteration %>% sort
 
@@ -15,22 +15,22 @@ ai_bolo$alteration %>% sort == ai_comm$alteration %>% sort
 # ai_comm <- ai_comm %>% filter(!grepl("Seq",ai_comm$alteration))
 
 merge <- left_join(ai_bolo, ai_comm, by = c("alteration"), suffix = c(".Bolo", ".CoMM"),) %>% 
-  arrange(desc(Ancestrality_Index.Bolo))
+  arrange(desc(Driverness_Index.Bolo))
 
 
 merge$alteration <- merge$alteration %>% str_remove("maj_call_|maj_broad_") %>% str_replace_all("_", " ") %>% str_remove("chr ") %>% str_replace_all("DEL", "Del") %>% str_replace_all("AMP", "Amp")
 
 merge$alteration <- factor(merge$alteration, levels = merge$alteration, ordered = T)
 
-merge$alteration[order(merge$Ancestrality_Index.Bolo)]
+merge$alteration[order(merge$Driverness_Index.Bolo)]
 
 
-gg1 <- merge %>% ggplot(aes(alteration, Ancestrality_Index.Bolo)) +
+gg1 <- merge %>% ggplot(aes(alteration, Driverness_Index.Bolo)) +
   geom_point(aes(color="MM-BO"), position = position_nudge(x = -0.15), size=2) +
-  geom_point(aes(x=alteration,y=Ancestrality_Index.CoMM, color="CoMMpass"), size=2, position = position_nudge(x = 0.15)) +
-  geom_segment(aes(x=alteration, xend=alteration, y=0, yend=Ancestrality_Index.Bolo, color="MM-BO"), position = position_nudge(x = -0.15))+
-  geom_segment(aes(x=alteration, xend=alteration, y=0, yend=Ancestrality_Index.CoMM, color="CoMMpass"), position = position_nudge(x = 0.15))+
-  ylab("Ancestrality Index") +
+  geom_point(aes(x=alteration,y=Driverness_Index.CoMM, color="CoMMpass"), size=2, position = position_nudge(x = 0.15)) +
+  geom_segment(aes(x=alteration, xend=alteration, y=0, yend=Driverness_Index.Bolo, color="MM-BO"), position = position_nudge(x = -0.15))+
+  geom_segment(aes(x=alteration, xend=alteration, y=0, yend=Driverness_Index.CoMM, color="CoMMpass"), position = position_nudge(x = 0.15))+
+  ylab("Driverness Index") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         legend.position = c(0.9, 0.8))+
@@ -39,14 +39,14 @@ gg1 <- merge %>% ggplot(aes(alteration, Ancestrality_Index.Bolo)) +
 gg1
 
 
-gg2 <- merge %>% ggplot(aes(Ancestrality_Index.Bolo, Ancestrality_Index.CoMM)) + 
+gg2 <- merge %>% ggplot(aes(Driverness_Index.Bolo, Driverness_Index.CoMM)) + 
   theme_light() +
   geom_smooth(method = "lm", alpha= 0.5) +
   geom_point(fill="black", colour="black", shape=21, size=3, alpha=0.5) + 
   ggpubr::stat_cor() +
-  xlab(label = "Ancestrality Index MM-BO") +
-  ylab("Ancestrality Index CoMMpass") +
-  ggrepel::geom_text_repel(data = merge %>% filter(Ancestrality_Index.Bolo>2.6 & Ancestrality_Index.CoMM >2.6),
+  xlab(label = "Driverness Index MM-BO") +
+  ylab("Driverness Index CoMMpass") +
+  ggrepel::geom_text_repel(data = merge %>% filter(Driverness_Index.Bolo>2.6 & Driverness_Index.CoMM >2.6),
                             aes(label=alteration), force = 1, min.segment.length=0, max.overlaps = 100) +
     theme(legend.position="none", 
           panel.border = element_rect(color = "black",
@@ -60,7 +60,7 @@ gg2
 gg1 + annotation_custom(ggplotGrob(gg2), xmin = 25, xmax = 60, 
                        ymin = 2.8, ymax = 7.5)
 
-dir.create("plots/Ancestrality_index/", showWarnings = F, recursive = T)
+dir.create("plots/Driverness_index/", showWarnings = F, recursive = T)
 
-ggsave("plots/Ancestrality_index/Ancestrality_index_def.pdf", 
+ggsave("plots/Driverness_index/Driverness_index_def.pdf", 
        device = "pdf", width = 12, height = 8)

@@ -56,7 +56,7 @@ dataCS <- rownames_to_column(dataCS, var = "sample")
 
 
 
-#================ Loop to compute ancestrality index per sample ===============
+#================ Loop to compute Driverness index per sample ===============
 
 timesMM<-list()
 framesMM<-list()
@@ -96,17 +96,17 @@ resultMM$penetrance<- round(resultMM$events/nrow(dataCS), 3)
 
 
 
-#============ compute the Ancestrality Index ================
+#============ compute the Driverness Index ================
 
 # AI = penetrance / MTGC
 
-resultMM$Ancestrality_Index<- round(resultMM$penetrance / resultMM$MTGC, 5)* 100
+resultMM$Driverness_Index<- round(resultMM$penetrance / resultMM$MTGC, 5)* 100
 
 resultMM <- rownames_to_column(resultMM,var = "alteration") 
 
-exp <- resultMM %>% arrange(desc(Ancestrality_Index))
+exp <- resultMM %>% arrange(desc(Driverness_Index))
 
-write_tsv(exp, "workfiles/AncestralityIndex_table_BO.txt")
+write_tsv(exp, "workfiles/DrivernessIndex_table_BO.txt")
 
 
 

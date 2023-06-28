@@ -87,10 +87,10 @@ resultMM<-as.data.frame(resultMM)
 
 resultMM$penetrance<- round(resultMM$events/nrow(dataCS), 3)
 
-resultMM$Ancestrality_Index<- round(resultMM$penetrance / resultMM$MTGC, 5)* 100
+resultMM$Driverness_Index<- round(resultMM$penetrance / resultMM$MTGC, 5)* 100
 
 resultMM <- rownames_to_column(resultMM,var = "alteration")
 
-write_tsv(resultMM, "workfiles/AncestralityIndex_table_CoMMpass.txt")
+write_tsv(resultMM, "workfiles/DrivernessIndex_table_CoMMpass.txt")
 
 
