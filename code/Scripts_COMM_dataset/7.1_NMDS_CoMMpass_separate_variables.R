@@ -4,6 +4,7 @@ library(pca3d)
 library(vegan)
 library(ggrepel)
 library(rgl)
+library(gridExtra)
 
 
 dir.create("plots/NMDS/CoMMpass/separate_variables/", showWarnings = F, recursive = T)
@@ -140,7 +141,6 @@ p6
 
 # grid arrange
 
-library(gridExtra)
 grid <- grid.arrange(p1,p2,p3,p4,p5,p6, ncol=3, nrow=2)
 grid
 
@@ -420,7 +420,7 @@ rgl.points(axes, size=9, color = "grey70")
 # Add axis labels
 rgl.texts(axes, text = c("NMDS1", "NMDS2", "NMDS3"), 
           color = "grey70",
-          cex=2,
+          cex=1,
           adj = c(0.5, -0.8), 
           size = 2)
 
@@ -451,4 +451,4 @@ rgl.quads( x = rep(xlim, each = 2),
 
 rgl.viewpoint(theta = 60, phi = 30, fov = 60, zoom = 0.7)
 
-snapshot3d(paste0(outdir,name,"_NMDS_CoMMpass_CLUSTERS.png"), height = 2000, width = 2000)
+snapshot3d(paste0(outdir,"NMDS_CoMMpass_CLUSTERS.png"), height = 2000, width = 2000)
