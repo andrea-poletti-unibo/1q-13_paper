@@ -589,3 +589,112 @@ with(import, coxph(OS ~ ULTRA_Low  )) %>% tidy( exponentiate =T, conf.int = T) %
 with(import, coxph(PFS ~ ULTRA_Low  )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis_CoMMpass.txt"), append = T, col_names = T)
 
 
+
+
+
+################################# KM curves with ISS and R ISS #################################
+
+import$MMrisk_class <- import$MMrisk_class %>% recode_factor(risk_1 ="1q&13+", risk_2 ="1q/13", risk_3 ="1q&13-") %>% relevel("1q&13-")
+#============ create trasnlocations vars ============
+import$IgH_translocation_type <-ifelse(import$SeqWGS_WHSC1_CALL==1, "t(4;14)",
+                                       ifelse(import$SeqWGS_CCND1_CALL==1, "t(11;14)",
+                                              ifelse(import$SeqWGS_CCND3_CALL==1,"t(6;14)",
+                                                     ifelse(import$SeqWGS_MAF_CALL==1,"t(14;16)",
+                                                            ifelse(import$SeqWGS_MAFB_CALL==1,"t(14;20)", 
+                                                                   "no translocation")))))
+
+
+import$IgH_translocation_type<-as.factor(import$IgH_translocation_type)
+
+import$SeqFISH_T_4_14 <- ifelse(import$SeqWGS_WHSC1_CALL==1, 1, 0)
+import$SeqFISH_T_11_14 <- ifelse(import$SeqWGS_CCND1_CALL==1, 1, 0)
+import$SeqFISH_T_14_16 <- ifelse(import$SeqWGS_MAF_CALL==1, 1, 0)
+import$SeqFISH_T_14_20 <- ifelse(import$SeqWGS_MAFB_CALL==1, 1, 0)
+import$SeqFISH_T_6_14 <- ifelse(import$SeqWGS_CCND3_CALL==1, 1, 0)
+
+
+import$CCND2_traslocation <- 0
+import$CCND2_traslocation[import$SeqFISH_T_4_14==1] <- 1
+import$CCND2_traslocation[import$SeqFISH_T_14_16==1] <- 1
+import$CCND2_traslocation[import$SeqFISH_T_14_20==1] <- 1
+
+import$MMrisk_class_t_CCND2 <- ifelse(import$MMrisk_CLASS==1 & import$CCND2_traslocation ==1 , "t&1q&13+",
+                                      ifelse(import$MMrisk_CLASS==1, "1q&13+_pure", import$MMrisk_class %>% as.character))
+
+import$MMrisk_class_t_CCND2 %>% table
+
+
+
+gg <- ggsurvplot(survfit(OS ~ import$MMrisk_class, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+import$MM_ISS <- paste0(import$MMrisk_class,"/R-ISS_",import$R_ISS)
+
+
+gg <- ggsurvplot(survfit(OS ~ import$MM_ISS, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+import$MMT_ISS <- paste0(import$MMrisk_class_t_CCND2,"/R-ISS_",import$R_ISS)
+import$MMT_ISS %>% table
+
+gg <- ggsurvplot(survfit(OS ~ import$MMT_ISS, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+i2 <- import %>% filter(R_ISS != "NA")
+
+OS2 <- Surv(i2$OS_months, i2$censos)
+
+gg <- ggsurvplot(survfit(OS2 ~ MMT_ISS, data = i2) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+
+
+i3 <- import %>% filter(R_ISS != "NA" & MMrisk_class_t_CCND2=="1q&13+_pure")
+
+OS3 <- Surv(i3$OS_months, i3$censos)
+
+gg <- ggsurvplot(survfit(OS3 ~ MMT_ISS, data = i3) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+
+
+i4 <- import %>% filter(R_ISS != "NA" & MMrisk_class_t_CCND2=="t&1q&13+")
+
+OS4 <- Surv(i4$OS_months, i4$censos)
+
+gg <- ggsurvplot(survfit(OS4 ~ MMT_ISS, data = i4) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+
+i5 <- import %>% filter(R_ISS == "3")
+
+OS5 <- Surv(i5$OS_months, i5$censos)
+
+gg <- ggsurvplot(survfit(OS5 ~ MMT_ISS, data = i5) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+import$FINAL <- ifelse(import$MMT_ISS %in% c("t&1q&13+/R-ISS_3", "1q&13+_pure/R-ISS_3" ), "DEF_RISK", ifelse(import$MMT_ISS %in% c("1q&13-/R-ISS_1", "1q&13+_pure/R-ISS_1"), "LOW_RISK", "other"))
+
+import$FINAL %>% table
+
+gg <- ggsurvplot(survfit(OS ~ FINAL, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+gg <- ggsurvplot(survfit(PFS ~ FINAL, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+
+
+
+gg <- ggsurvplot(survfit(OS ~ R_ISS, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+gg <- ggsurvplot(survfit(PFS ~ R_ISS, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.5), legend.title="", tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
