@@ -96,7 +96,7 @@ plotdata_melt %>% ggplot(aes(value)) + geom_density() # scaled around CN1 for de
 
 # all chrs
 plotdata_melt %>% filter(status != "normal") %>% ggplot(aes(variable, value + 2)) + 
-  geom_violin(scale="count")+
+  geom_violin(scale="area", bw=.1)+
   labs(x="chromosome arm", y=" Copy Number") +
   geom_jitter(aes(colour= status), width=0.2, alpha=0.5, size=1.2) +
   geom_hline(yintercept = 2.1, linetype=1) +
@@ -105,10 +105,10 @@ plotdata_melt %>% filter(status != "normal") %>% ggplot(aes(variable, value + 2)
   geom_hline(yintercept = 1.1, linetype=3) + 
   geom_hline(yintercept = 1.5, linetype=3) + 
   geom_hline(yintercept = 2.5, linetype=3) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust= 1))
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust= 1), legend.position = "top")
 
-ggsave(filename = "violin_plot_all_broad_calls_CoMMpass.pdf",path = "plots/violin_plots/", 
-       device = "pdf",units = "in",dpi = 320, width = 16, height = 8)
+ggsave(filename = "violin_plot_all_broad_calls_CoMMpass.svg",path = "plots/violin_plots/", 
+       units = "in",dpi = 320, width = 16, height = 8)
 
 
 

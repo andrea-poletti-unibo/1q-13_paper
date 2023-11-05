@@ -68,4 +68,5 @@ ggsave("plots/Venn4Ways/Venn_diagram_CoMM.pdf",
        width = 7, height = 7)
 
 
-
+ggsave("plots/Venn4Ways/Venn_diagram_CoMM.svg", 
+       width = 7, height = 7)

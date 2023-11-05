@@ -80,6 +80,13 @@ asd <- data %>% select(AMP_1p, AMP_1q, AMP_2p:AMP_7q, AMP_8q, AMP_9p,AMP_9q, AMP
                        t_IgH)
 
 
+names(asd) <- names(asd) %>% str_replace("AMP","Amp") 
+names(asd) <- names(asd) %>% str_replace("DEL","Del") 
+names(asd) <- names(asd) %>% str_replace("_"," ") 
+names(asd) <- names(asd) %>% str_replace("_",";") 
+names(asd)
+
+
 ############################# CORRELATION MATRIX ##########################
 
 dataM <- as.matrix(asd)
@@ -101,6 +108,9 @@ apply(dataMF, 2, sum, na.rm = TRUE)
 
 library(corrplot)
 
+colbwr <- colorRampPalette(c("blue", "white", "red"))
+
+
 M <- cor(dataMF, use = "pairwise.complete.obs")
 
 pvalueMat <- cor.mtest(M, conf.level = 0.95)
@@ -108,6 +118,29 @@ pvalueMat <- cor.mtest(M, conf.level = 0.95)
 # DEF
 
 pdf("plots/correlation_plots/cor_matrix_CoMM.pdf", 
+    width = 10, height = 11)
+
+corrplot(M, type="lower", method="ellipse", 
+         tl.col="black", 
+         col = colbwr(200),
+         p.mat = pvalueMat$p, 
+         sig.level = 0.05,
+         insig = "pch", 
+         pch.cex	=0.8, 
+         pch.col ="grey40",
+         diag = F,
+         tl.srt= 60,
+         tl.cex=0.7
+         # tl.col=c(rep("orangered",27),rep("deepskyblue2",15),rep("darkorchid3",4), rep("black",5))
+         # addgrid.col="white"
+) 
+
+dev.off()
+
+
+
+
+svg("plots/correlation_plots/cor_matrix_CoMM.svg", 
     width = 10, height = 11)
 
 corrplot(M, type="lower", method="ellipse", 

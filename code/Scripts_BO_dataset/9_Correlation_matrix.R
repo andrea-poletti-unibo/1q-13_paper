@@ -72,6 +72,11 @@ asd <- data %>% select(AMP_1q, AMP_3p:AMP_7q, AMP_8q, AMP_9p,AMP_9q, AMP_11p:AMP
                        HyperDiploidy, t_IgH)
 
 
+names(asd) <- names(asd) %>% str_replace("AMP","Amp") 
+names(asd) <- names(asd) %>% str_replace("DEL","Del") 
+names(asd) <- names(asd) %>% str_replace("_"," ") 
+names(asd) <- names(asd) %>% str_replace("_",";") 
+names(asd)
 
 ############################################### CORRELATION MATRIX #########################################################
 
@@ -131,3 +136,29 @@ corrplot(M, type="lower",
 ) 
 
 dev.off()
+
+
+
+svg("plots/correlation_plots/cor_matrix_BO.svg", 
+    width = 10, height = 11)
+
+corrplot(M, type="lower", 
+         method="ellipse", 
+         tl.col="black", 
+         col = colbwr(200),
+         p.mat = pvalueMat$p, 
+         sig.level = 0.05,
+         insig = "pch", 
+         pch.cex	=0.8, 
+         pch.col ="grey40",
+         diag = FALSE,
+         tl.srt= 60,
+         tl.cex=0.7,
+         tl.pos="ld"
+         # addgrid.col="white"
+) 
+
+dev.off()
+
+
+

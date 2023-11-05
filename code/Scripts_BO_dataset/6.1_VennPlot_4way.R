@@ -64,4 +64,5 @@ dir.create("plots/Venn4Ways/", showWarnings = F, recursive = T)
 ggsave("plots/Venn4Ways/Venn_diagram_BO.pdf", 
        width = 7, height = 7)
 
-
+ggsave("plots/Venn4Ways/Venn_diagram_BO.svg", 
+       width = 7, height = 7)

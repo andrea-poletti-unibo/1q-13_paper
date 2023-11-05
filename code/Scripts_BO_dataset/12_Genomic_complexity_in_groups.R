@@ -11,6 +11,7 @@ import <- rownames_to_column(import, "sample")
 # select only relevant variables to associate
 names(import)
 data<-import %>% select(ID, contains("maj_broad"), contains("maj_focal"), contains("maj_call"), HyperDiploidy, matches("^t_"))
+
 names(data)
 
 #____ Build CALLS for traslocations ______
@@ -135,33 +136,30 @@ my_comparisons <- list( c("1q&13-", "1q/13"),
                         c("1q&13-", "1q&13+") )
 
 
-df.2 %>% ggplot(aes(group, SUM)) +
+gg <- df.2 %>% ggplot(aes(group, SUM)) +
   geom_violin(aes(fill=group, colour=group), alpha=0.5) +   
   geom_boxplot(aes( colour=group), alpha=0.5, width=0.5, outlier.shape = NA) +
-  geom_jitter(width = 0.15, alpha=0.5) + 
-  stat_summary(geom="text", fun =summary,
-               aes(label=sprintf("%1.2f", ..y..), color=group),
-               position=position_nudge(x= 0.45), size=3) +
+  geom_jitter(width = 0.12, alpha=0.5) + 
+  stat_summary(geom="text", fun =quantile,
+               aes(label=sprintf("%1.2f", after_stat(y)), color=group),
+               position=position_nudge(x= 0.5), size=3.5) +
   stat_compare_means(comparisons = my_comparisons)+ 
-  stat_compare_means(label.y.npc =0.8, label.x.npc = 0) + 
+  stat_compare_means(label.y.npc =0.75, label.x.npc = 0) + 
   xlab("") + ylab("Genomic Complexity") +
   # custom colors
   scale_fill_manual(values=c("turquoise3", "grey60", "orangered")) +
-  scale_color_manual(values=c("turquoise3", "grey60", "orangered")) 
+  scale_color_manual(values=c("turquoise3", "grey60", "orangered")) +
+  # legend bottom
+  theme(legend.position = "bottom") 
 
+gg
 
 dir.create("plots/Genomic_complexity")
 
-ggsave(filename = "plots/Genomic_complexity/genomic_complexity_in_MMriskGroups.pdf", 
-       units = "in", dpi = 300, width = 9, height = 8)
+ggsave(filename = "plots/Genomic_complexity/genomic_complexity_in_MMriskGroups.svg", 
+       units = "in", dpi = 300, width = 6, height = 6)
 
 
 df.2 %>% group_by(group) %>% summarize(mean_complexity=mean(SUM), 
                                        CI_lower=SUM %>% gmodels::ci() %>% .[2],
                                        CI_upper=SUM %>% gmodels::ci() %>% .[3])
-
-                                       
-
-
-
-
