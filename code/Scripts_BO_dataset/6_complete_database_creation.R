@@ -3,7 +3,7 @@
 library(tidyverse)
 library(data.table)
 
-#_____import the excel (from Cinzia) with FISH and clincal data______
+#_____import the data with FISH and clincal data______
 
 FISH_CLIN <- fread("data/clinical_data_BOLO_210122_anonim.txt")
 
