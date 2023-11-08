@@ -1,6 +1,7 @@
 
 library(data.table)
 library(tidyverse)
+library(gplots)
 
 # import segments from GISTIC input
 segm <- fread("workfiles/GISTIC_1q13_segm_CoMMpass.txt") 
@@ -104,8 +105,9 @@ rownames(allgenesCalls) <- allgenesCalls$rowname
 allgenesCalls <- allgenesCalls[,-1]
 
 
+write_tsv(allgenesCalls, "workfiles/FOCAL_CALLS/CoMMpass/Focal_clonality_calls_CoMMpass.txt")
+
 #================ compute the 1/0 calls ================
-library(gplots)
 
 dir.create("workfiles/FOCAL_CALLS/CoMMpass/", recursive = T, showWarnings = F)
 

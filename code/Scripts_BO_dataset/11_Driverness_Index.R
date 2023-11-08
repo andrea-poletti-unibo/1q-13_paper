@@ -98,7 +98,7 @@ resultMM$penetrance<- round(resultMM$events/nrow(dataCS), 3)
 
 #============ compute the Driverness Index ================
 
-# AI = penetrance / MTGC
+# DI = penetrance / MTGC
 
 resultMM$Driverness_Index<- round(resultMM$penetrance / resultMM$MTGC, 5)* 100
 

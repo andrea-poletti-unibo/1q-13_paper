@@ -139,7 +139,7 @@ my_comparisons <- list( c("1q&13-", "1q/13"),
 gg <- df.2 %>% ggplot(aes(group, SUM)) +
   geom_violin(aes(fill=group, colour=group), alpha=0.5) +   
   geom_boxplot(aes( colour=group), alpha=0.5, width=0.5, outlier.shape = NA) +
-  geom_jitter(width = 0.12, alpha=0.5) + 
+  geom_jitter(width = 0.12, alpha=0.3) + 
   stat_summary(geom="text", fun =quantile,
                aes(label=sprintf("%1.2f", after_stat(y)), color=group),
                position=position_nudge(x= 0.5), size=3.5) +
@@ -155,6 +155,9 @@ gg <- df.2 %>% ggplot(aes(group, SUM)) +
 gg
 
 dir.create("plots/Genomic_complexity")
+
+ggsave(filename = "plots/Genomic_complexity/genomic_complexity_in_MMriskGroups.pdf", 
+       units = "in", dpi = 300, width = 6, height = 6)
 
 ggsave(filename = "plots/Genomic_complexity/genomic_complexity_in_MMriskGroups.svg", 
        units = "in", dpi = 300, width = 6, height = 6)

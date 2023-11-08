@@ -44,12 +44,13 @@ scaling_factor <- mean(c(del_peak, amp_peak)) %>% round(2)
 ############### SCALE the signal for the scaling factor ################
 armsCN_scaled <- apply(armsCN, 2, function(x) x / scaling_factor ) %>% as.data.frame()
 
+write_tsv(armsCN_scaled  %>% rownames_to_column("sample"), "workfiles/BROAD_CALLS/Broad_clonality_calls_BO.txt")
+
 
 # re-melt the data matrix
 plotdata <- armsCN_scaled
 plotdata$sample <- rownames(plotdata) %>% str_replace("_\\.CytoScanHD_Array\\.","") %>% str_replace("_\\.GenomeWideSNP_6\\.","")
 plotdata_melt <- melt(plotdata, id.vars= "sample")
-
 
 
 # ___________ function to find peaks in the density distribution ______________

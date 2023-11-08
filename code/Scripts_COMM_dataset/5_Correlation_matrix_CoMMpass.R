@@ -138,8 +138,6 @@ corrplot(M, type="lower", method="ellipse",
 dev.off()
 
 
-
-
 svg("plots/correlation_plots/cor_matrix_CoMM.svg", 
     width = 10, height = 11)
 

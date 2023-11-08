@@ -37,6 +37,7 @@ dens$x[maximums] # peaks at -0.954 for clonal dels and 0.912 for clonal amps
 ########### SCALE the signal for the scaling factor #############
 armsCN_scaled <- apply(armsCN, 2, function(x) x/0.933 ) %>% as.data.frame()
 
+write_tsv(armsCN_scaled %>% rownames_to_column("sample"), "workfiles/BROAD_CALLS/CoMMpass/Broad_clonality_calls_CoMMpass.txt")
 
 # re-melt the data matrix
 plotdata <- armsCN_scaled

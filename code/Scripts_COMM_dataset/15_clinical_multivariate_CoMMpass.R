@@ -281,6 +281,7 @@ mv_R %>% summary()
 ggforest2(mv_R, main = "OS COMMpass (model 1)") 
 
 ggsave(paste0(outpath,"FOREST_OS_COMMpass_model1.pdf"), width = 10, height = 7)
+ggsave(paste0(outpath,"FOREST_OS_COMMpass_model1.svg"), width = 10, height = 7)
 
 
 # PFS model 1
@@ -296,6 +297,7 @@ mv_R %>% summary()
 ggforest2(mv_R, main = "PFS COMMpass (model 1)") 
 
 ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model1.pdf"), width = 10, height = 7)
+ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model1.svg"), width = 10, height = 7)
 
 
 #=========== MODEL 2 - multivariate MMrisk and CCND2 t =============== 
@@ -313,6 +315,7 @@ mv_R %>% summary()
 ggforest2(mv_R, main = "OS COMMpass (model 2)") 
 
 ggsave(paste0(outpath,"FOREST_OS_COMMpass_model2.pdf"), width = 10, height = 7)
+ggsave(paste0(outpath,"FOREST_OS_COMMpass_model2.svg"), width = 10, height = 7)
 
 
 # PFS model 2
@@ -328,6 +331,7 @@ mv_R %>% summary()
 ggforest2(mv_R, main = "PFS COMMpass (model 2)") 
 
 ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model2.pdf"), width = 10, height = 7)
+ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model2.svg"), width = 10, height = 7)
 
 
 
@@ -373,6 +377,7 @@ mv_R %>% summary()
 ggforest2(mv_R, main = "OS CoMMpass (R-ISS)")
 
 ggsave(paste0(outpath,"FOREST_OS_CoMMpass_R-ISS.pdf"), width = 10, height = 7)
+ggsave(paste0(outpath,"FOREST_OS_CoMMpass_R-ISS.svg"), width = 10, height = 7)
 
 
 # PFS Ultra
@@ -387,3 +392,4 @@ mv_R %>% summary()
 ggforest2(mv_R, main = "PFS CoMMpass (R-ISS)")
 
 ggsave(paste0(outpath,"FOREST_PFS_CoMMpass_R-ISS.pdf"), width = 10, height = 7)
+ggsave(paste0(outpath,"FOREST_PFS_CoMMpass_R-ISS.svg"), width = 10, height = 7)

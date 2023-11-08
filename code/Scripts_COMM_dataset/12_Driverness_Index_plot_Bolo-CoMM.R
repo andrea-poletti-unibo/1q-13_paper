@@ -64,3 +64,6 @@ dir.create("plots/Driverness_index/", showWarnings = F, recursive = T)
 
 ggsave("plots/Driverness_index/Driverness_index_def.pdf", 
        device = "pdf", width = 12, height = 8)
+
+ggsave("plots/Driverness_index/Driverness_index_def.svg", 
+        width = 12, height = 8)

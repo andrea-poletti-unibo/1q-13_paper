@@ -73,6 +73,7 @@ rownames(genesCallsRes) <- gene_names
 
 genesCallsFinal <- t(genesCallsRes) # traspose the results
 
+write_tsv(allgenesCalls, "workfiles/FOCAL_CALLS/Focal_clonality_calls_BO.txt")
 
 
 #================ compute the 1/0 calls ================
