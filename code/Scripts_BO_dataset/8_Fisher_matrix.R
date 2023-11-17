@@ -36,11 +36,11 @@ names(data)
 # relevant calls
 data <- as.data.frame(data)
 data %>% summarise_all(sum, na.rm =T) %>% as.numeric %>% sort %>% plot + abline(h = 25) + abline(h = 10, col="red")
-data %>% summarise_all(sum, na.rm =T) %>% `>`(25) %>% as.vector -> rel
+data %>% summarise_all(sum, na.rm =T) %>% '>'(25) %>% as.vector -> rel
 
 data <- data[rel]
 names(data)
-data %>% summarise_all(sum, na.rm =T) %>% `>`(25) %>% as.vector %>% table
+data %>% summarise_all(sum, na.rm =T) %>% '>'(25) %>% as.vector %>% table
 
 
 #------------------ OPTIONAL: add group risk 1q & 13 ------------------------
@@ -333,3 +333,5 @@ dir.create("plots/fisher_plots/")
 
 ggsave("plots/fisher_plots/fisher_matrix_BO.pdf", 
        dpi = 300, width = 10, height = 10, units = "in")
+
+write_tsv(mat.melt, "plots/fisher_plots/fisher_matrix_BO_data.txt")

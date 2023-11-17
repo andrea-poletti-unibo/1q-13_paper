@@ -37,15 +37,11 @@ library(ggvenn)
 
 # 4 way VENN PLOT
 
-is.na(venndf$TRANSLOCATION) %>% sum
-
 venndf <- import %>% select(MMrisk_1q_all, MMrisk_13_all, HyperDiploidy, TRANSLOCATION)
 
 venndf <- apply(venndf, 2 , as.logical) %>% as.data.frame() %>% rownames_to_column()
 
 venndf_complete <- venndf[complete.cases(venndf),]
-
-# venndf$TRANSLOCATION[is.na(venndf$TRANSLOCATION)] <- F
 
 venndf_complete <- venndf_complete %>% rename("Amp 1q"=MMrisk_1q_all, "Del 13q"=MMrisk_13_all, "IgH Translocation"=TRANSLOCATION)
 
@@ -66,3 +62,5 @@ ggsave("plots/Venn4Ways/Venn_diagram_BO.pdf",
 
 ggsave("plots/Venn4Ways/Venn_diagram_BO.svg", 
        width = 7, height = 7)
+
+write_tsv(venndf_complete, "plots/Venn4Ways/Venn_diagram_BO_data.txt")

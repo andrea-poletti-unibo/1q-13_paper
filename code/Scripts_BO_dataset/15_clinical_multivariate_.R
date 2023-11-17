@@ -16,11 +16,10 @@ dir.create(outpath)
 
 #========== MM RISK CREATION ============
 
-import$AMP_1q_genes_all <- with(import, 
-                                ifelse(`AMP_maj-focal_ANP32E`==1 | `AMP_maj-focal_MCL1` ==1 | `AMP_maj-focal_CKS1B`==1, 1,0 ))
+import$AMP_1q_genes_all <- ifelse(import$"AMP_maj-focal_ANP32E"==1 | import$"AMP_maj-focal_MCL1" ==1 | import$"AMP_maj-focal_CKS1B"==1, 1,0 )
 
-import$MMrisk_1q_all<- ifelse( import$`AMP_maj-broad_chr_1q` == 1 | import$AMP_1q_genes_all ==1, 1, 0)
-import$MMrisk_13_all <- ifelse( import$`DEL_maj-broad_chr_13q` ==1 | import$`DEL_maj-focal_RB1` ==1, 1, 0)
+import$MMrisk_1q_all<- ifelse( import$"AMP_maj-broad_chr_1q" == 1 | import$AMP_1q_genes_all ==1, 1, 0)
+import$MMrisk_13_all <- ifelse( import$"DEL_maj-broad_chr_13q" ==1 | import$"DEL_maj-focal_RB1" ==1, 1, 0)
 
 import$MMrisk_CLASS <- 3  - import$MMrisk_1q_all - import$MMrisk_13_all
 
@@ -274,13 +273,15 @@ mv_R <- coxph(OS ~ OLD + SEX +
                 MMrisk_allclass +
                 FISH_Del_17p + FISH_Del_1p36 + HyperDiploidy +
                 IgH_translocation_type +
-                strata(PROTOCOL_REV), data = import )
+                strata(PROTOCOL_REV), data = import)
 mv_R %>% summary()
 
 ggforest2(mv_R, main = "OS MM-BO (model 1)") 
 
 ggsave(paste0(outpath,"FOREST_OS_Bolo_model1.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_OS_Bolo_model1.svg"), width = 10, height = 7)
+
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_OS_Bolo_model1.txt"))
 
 
 # PFS model 1
@@ -297,6 +298,8 @@ ggforest2(mv_R, main = "PFS MM-BO (model 1)")
 
 ggsave(paste0(outpath,"FOREST_PFS_Bolo_model1.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_PFS_Bolo_model1.svg"), width = 10, height = 7)
+
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_PFS_Bolo_model1.txt"))
 
 
 
@@ -317,6 +320,8 @@ ggforest2(mv_R, main = "OS MM-BO (model 2)")
 ggsave(paste0(outpath,"FOREST_OS_Bolo_model2.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_OS_Bolo_model2.svg"), width = 10, height = 7)
 
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_OS_Bolo_model2.txt"))
+
 
 # PFS model 2
 mv_R <- coxph(PFS ~ OLD + SEX + 
@@ -333,5 +338,6 @@ ggforest2(mv_R, main = "PFS MM-BO (model 2)")
 ggsave(paste0(outpath,"FOREST_PFS_Bolo_model2.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_PFS_Bolo_model2.svg"), width = 10, height = 7)
 
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_PFS_Bolo_model2.txt"))
 
 

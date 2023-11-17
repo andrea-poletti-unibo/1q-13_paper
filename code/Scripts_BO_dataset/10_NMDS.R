@@ -118,14 +118,16 @@ ggplot(ggdata, aes(MDS1, MDS2)) + geom_point(size= 3, alpha=0.5) +
 dir.create("plots/NMDS")
 ggsave("plots/NMDS/NMDS_vars_BO.png", width = 5, height = 5)
 
-#________________distances between samples __________________
+write_tsv(ggdata, "plots/NMDS/NMDS_vars_BO.tsv")
+
+
+#________________ distances between samples __________________
 
 MDSdata2 <- as.matrix(df.2[,-1]) # dont trasnpose, exclude sample column
 rownames(MDSdata2) <- df.2$sample
 
 
 MDS.dist2<- dist(MDSdata2, method = "manhattan")
-
 
 fit2 <- vegan::metaMDS(comm = MDS.dist2, engine = "monoMDS", k=2, try= 50, trymax = 100)
 
@@ -259,6 +261,9 @@ COLS <- list(
 
 i=1
 
+
+
+
 for(i in seq_along(CATS)){
   
   i
@@ -347,9 +352,14 @@ for(i in seq_along(CATS)){
 }
 
 
+cats_df <- CATS %>% as.data.frame()
+
+exp_data <- cbind(fit3$points, cats_df)
+
+write_tsv(exp_data, "plots/NMDS/data_NMDS_BO_3D.tsv")
+
+
 #____ center of Mass analysis _____
-
-
 
 name <- names(CATS[i])
 print(name)
@@ -456,6 +466,8 @@ for(i in seq_along(CATS)){
 
 res2 <- res %>% dplyr::filter(group!="gray10", name %in% c("HD", "t_IgH", "risk_1", "risk_3") )
 rownames(res2) <- res2$name
+
+write_tsv(res2, "plots/NMDS/data_NMDS_BO_CLUSTERS.tsv")
 
 rgl.open() # Open a new RGL device
 rgl.bg(color = "white") # Setup the background color

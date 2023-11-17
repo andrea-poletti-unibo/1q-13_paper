@@ -125,7 +125,7 @@ dir.create("plots/violin_plots")
 ggsave(filename = "violin_plot_all_broad_calls_MMBO.svg",path = "plots/violin_plots/", 
        units = "in",dpi = 320, width = 16, height = 8)
 
-
+write_tsv(plotdata_melt, "plots/violin_plots/violin_plot_MMBO_data.txt")
 
 
 

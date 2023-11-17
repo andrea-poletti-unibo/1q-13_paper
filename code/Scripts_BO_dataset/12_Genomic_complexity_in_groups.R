@@ -131,6 +131,7 @@ df.2 %>% ggplot(aes(group3, SUM, colour=group3)) +
 
 #________ def plots _____ paper
 
+
 my_comparisons <- list( c("1q&13-", "1q/13"), 
                         c("1q/13", "1q&13+"), 
                         c("1q&13-", "1q&13+") )
@@ -154,7 +155,10 @@ gg <- df.2 %>% ggplot(aes(group, SUM)) +
 
 gg
 
+
 dir.create("plots/Genomic_complexity")
+
+write_tsv(df.2, "plots/Genomic_complexity/genomic_complexity_data.txt")
 
 ggsave(filename = "plots/Genomic_complexity/genomic_complexity_in_MMriskGroups.pdf", 
        units = "in", dpi = 300, width = 6, height = 6)

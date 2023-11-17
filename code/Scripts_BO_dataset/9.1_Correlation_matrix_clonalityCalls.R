@@ -56,7 +56,7 @@ names(data)
 
 # relevant calls
 data %>% summarise_all(.funs=function(x) sum(x>0.1, na.rm =T)) %>% as.numeric %>% sort %>% plot + abline(h = 25) + abline(h = 10, col="red")
-data %>% summarise_all(.funs=function(x) sum(x>0.1, na.rm =T)) %>% `>`(25) %>% as.vector -> rel
+data %>% summarise_all(.funs=function(x) sum(x>0.1, na.rm =T)) %>% ">"(25) %>% as.vector -> rel
 
 25/512
 rel %>% table
@@ -122,6 +122,10 @@ colbwr2 <- colorRampPalette(c("#67001F", "#B2182B", "#D6604D", "#F4A582",
 #============== create correlation matrix plot ===============
 
 dir.create("plots/correlation_plots/")
+
+M_df <- M %>% as.data.frame(row.names = row.names(M)) %>% rownames_to_column("Alteration")
+
+write_tsv(M_df, "plots/correlation_plots/cor_matrix_clonality_BO.txt")
 
 pdf("plots/correlation_plots/cor_matrix_clonality_BO.pdf", 
     width = 10, height = 11)
