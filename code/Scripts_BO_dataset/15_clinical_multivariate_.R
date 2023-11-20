@@ -262,6 +262,8 @@ ggforest2 <- function (model, data = NULL, main = "Hazard ratio", cpositions = c
 #..........................................................
 
 
+
+
 ######################### MULTIVARIATE ##############################
 
 #===========  MODEL 1 - multivariate MMrisk =============== 

@@ -314,9 +314,11 @@ MDS_EXP_paper <- plotMDS(lcpm, #labels=group,
         col=col.group,
         dim=c(1,2))# plot dimension 1 vs dimension 2
 
-# write_tsv(lcpm %>% round(2) %>% as.data.frame(), "plots/DEG_analysis/data_limma_gene_expression_MDS.txt")
+MDS_EXP_paper_df <- data.frame(dim1=MDS_EXP_paper$x, dim2 = MDS_EXP_paper$y, group= col.group)
 
+MDS_EXP_paper_df %>% ggplot(aes(dim1,dim2, color=group)) + geom_point() + theme_bw()
 
+write_tsv(MDS_EXP_paper_df %>% as.data.frame(), "plots/DEG_analysis/data_limma_gene_expression_MDS.txt")
 
 
 

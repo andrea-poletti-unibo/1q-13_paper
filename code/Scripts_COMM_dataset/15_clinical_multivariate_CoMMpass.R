@@ -283,6 +283,8 @@ ggforest2(mv_R, main = "OS COMMpass (model 1)")
 ggsave(paste0(outpath,"FOREST_OS_COMMpass_model1.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_OS_COMMpass_model1.svg"), width = 10, height = 7)
 
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_OS_CoMM_model1.txt"))
+
 
 # PFS model 1
 mv_R <- coxph(PFS ~ OLD + SEX + 
@@ -298,6 +300,8 @@ ggforest2(mv_R, main = "PFS COMMpass (model 1)")
 
 ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model1.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model1.svg"), width = 10, height = 7)
+
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_PFS_CoMM_model1.txt"))
 
 
 #=========== MODEL 2 - multivariate MMrisk and CCND2 t =============== 
@@ -317,6 +321,8 @@ ggforest2(mv_R, main = "OS COMMpass (model 2)")
 ggsave(paste0(outpath,"FOREST_OS_COMMpass_model2.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_OS_COMMpass_model2.svg"), width = 10, height = 7)
 
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_OS_CoMM_model2.txt"))
+
 
 # PFS model 2
 mv_R <- coxph(PFS ~ OLD + SEX + 
@@ -333,6 +339,7 @@ ggforest2(mv_R, main = "PFS COMMpass (model 2)")
 ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model2.pdf"), width = 10, height = 7)
 ggsave(paste0(outpath,"FOREST_PFS_COMMpass_model2.svg"), width = 10, height = 7)
 
+write_tsv(mv_R %>% tidy(exponentiate=T, conf.int=T), paste0(outpath,"data_FOREST_PFS_CoMM_model2.txt"))
 
 
 # #=============== ULTRA model ===================

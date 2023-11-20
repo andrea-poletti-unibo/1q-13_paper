@@ -67,3 +67,6 @@ ggsave("plots/Driverness_index/Driverness_index_def.pdf",
 
 ggsave("plots/Driverness_index/Driverness_index_def.svg", 
         width = 12, height = 8)
+
+
+write_tsv(merge, "plots/Driverness_index/data_Driverness_index_def.txt")
