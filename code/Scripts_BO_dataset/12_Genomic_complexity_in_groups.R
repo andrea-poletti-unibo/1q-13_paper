@@ -88,7 +88,9 @@ df.2$SUM %>% summary
 
   
   
-kruskal.test(df.2$group, df.2$SUM)
+KS <- kruskal.test(df.2$group, df.2$SUM)
+
+KS$p.value
 
 GC_plus <- df.2 %>% filter(group=="1q&13+") %>% .$SUM
 GC_plus_other <- df.2 %>% filter(group != "1q&13+") %>% .$SUM
@@ -117,7 +119,7 @@ df.2 %>% ggplot(aes(group2, SUM, colour=group2)) +
   geom_jitter(width = 0.2) +
   ggpubr::stat_compare_means()
 
-
+wilcox.test()
 df.2 %>% ggplot(aes(group1, SUM, colour=group1)) +
   geom_boxplot() +
   geom_jitter(width = 0.2) +

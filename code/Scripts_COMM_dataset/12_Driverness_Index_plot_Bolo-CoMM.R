@@ -43,7 +43,7 @@ gg2 <- merge %>% ggplot(aes(Driverness_Index.Bolo, Driverness_Index.CoMM)) +
   theme_light() +
   geom_smooth(method = "lm", alpha= 0.5) +
   geom_point(fill="black", colour="black", shape=21, size=3, alpha=0.5) + 
-  ggpubr::stat_cor() +
+  ggpubr::stat_cor(method = "spearman", cor.coef.name = "rho", p.accuracy = 0.0001) +
   xlab(label = "Driverness Index MM-BO") +
   ylab("Driverness Index CoMMpass") +
   ggrepel::geom_text_repel(data = merge %>% filter(Driverness_Index.Bolo>2.6 & Driverness_Index.CoMM >2.6),
@@ -54,6 +54,19 @@ gg2 <- merge %>% ggplot(aes(Driverness_Index.Bolo, Driverness_Index.CoMM)) +
                                       size = 1.5))
   
 gg2
+
+
+spear <- cor.test(merge$Driverness_Index.Bolo, merge$Driverness_Index.CoMM, method = "spearman", alternative="less")
+spear
+spear$p.value
+
+
+spear$p.value %>% formatC(digits=2, format="f") %>% as.numeric
+
+# scientific notation
+spear$p.value %>% formatC(digits=2, format="e")
+
+wilcox.test()
 
 
 
@@ -70,3 +83,4 @@ ggsave("plots/Driverness_index/Driverness_index_def.svg",
 
 
 write_tsv(merge, "plots/Driverness_index/data_Driverness_index_def.txt")
+
