@@ -81,9 +81,6 @@ asd <- asd %>% select(Amp_chr_1q:Del_chr_22q,t_4_14,t_11_14,t_others,t_IgH,Hyper
 names(asd) <- names(asd) %>% str_replace_all("_"," ") 
 names(asd) <- names(asd) %>% str_replace_all("chr ","") 
 
-names(asd)
-
-
 
 
 ###################################### CORRELATION MATRIX ############################################

@@ -66,21 +66,21 @@ head(names(importCounts))
 
 genelist<-importCounts$GENE_ID #create commpass gene list
 
-listEnsembl()
-listEnsembl(version=105) # use version 105 for reproducibility
+# listEnsembl()
+# listEnsembl(version=105) # use version 105 for reproducibility
 
-ensembl105 = useEnsembl(biomart="ensembl", version=105, dataset = "hsapiens_gene_ensembl")
+# ensembl105 = useEnsembl(biomart="ensembl", version=105, dataset = "hsapiens_gene_ensembl")
 
-gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
-                  filters="ensembl_gene_id",
-                  values=genelist, #download the additional annotation for the compass gene list
-                  mart=ensembl105)
+# gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
+#                   filters="ensembl_gene_id",
+#                   values=genelist, #download the additional annotation for the compass gene list
+#                   mart=ensembl105)
 
 
-saveRDS(gene_coords_105, "workfiles/bioMart_genes_annot.RData")
+# saveRDS(gene_coords_105, "workfiles/bioMart_genes_annot.RData")
 
 #import "bioMart_genes_annot.RData" prepared file if no internet connection available 
-# gene_coords_105 <- readRDS("workfiles/bioMart_genes_annot.RData")
+gene_coords_105 <- readRDS("workfiles/bioMart_genes_annot.RData")
 
 #creation of length variable
 gene_coords_105$length = gene_coords_105$end_position - gene_coords_105$start_position

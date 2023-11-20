@@ -68,21 +68,20 @@ head(names(importCounts))
 
 genelist<-importCounts$GENE_ID #create commpass gene list
 
-listEnsembl()
-listEnsembl(version=105) # use version 105 for reproducibility
+# listEnsembl()
+# listEnsembl(version=105) # use version 105 for reproducibility
 
-ensembl105 = useEnsembl(biomart="ensembl", version=105, dataset = "hsapiens_gene_ensembl")
+# ensembl105 = useEnsembl(biomart="ensembl", version=105, dataset = "hsapiens_gene_ensembl")
 
-gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
-                  filters="ensembl_gene_id",
-                  values=genelist, #download the additional annotation for the compass gene list
-                  mart=ensembl105)
+# gene_coords_105=getBM(attributes=c("hgnc_symbol","ensembl_gene_id", "start_position","end_position"),
+#                   filters="ensembl_gene_id",
+#                   values=genelist, #download the additional annotation for the compass gene list
+#                   mart=ensembl105)
 
-
-saveRDS(gene_coords_105, "workfiles/bioMart_genes_annot.RData")
+# saveRDS(gene_coords_105, "workfiles/bioMart_genes_annot.RData")
 
 #import "bioMart_genes_annot.RData" prepared file if no internet connection available 
-# gene_coords_105 <- readRDS("workfiles/bioMart_genes_annot.RData")
+gene_coords_105 <- readRDS("workfiles/bioMart_genes_annot.RData")
 
 #creation of length variable
 gene_coords_105$length = gene_coords_105$end_position - gene_coords_105$start_position
@@ -285,6 +284,7 @@ lcpm <- cpm(x, log=TRUE)
 
 # # MDS PLOT
 
+
 pdf("plots/DEG_analysis/limma_gene_expression_MDS.pdf", width = 10, height = 5)
 
 par(mfrow=c(1,2))
@@ -306,6 +306,19 @@ plotMDS(lcpm, #labels=group,
 title(main="Limma gene expression MDS plot")
 
 dev.off()
+
+
+#_____save data for MDS plot in paper_____
+MDS_EXP_paper <- plotMDS(lcpm, #labels=group,
+        pch=20,
+        col=col.group,
+        dim=c(1,2))# plot dimension 1 vs dimension 2
+
+# write_tsv(lcpm %>% round(2) %>% as.data.frame(), "plots/DEG_analysis/data_limma_gene_expression_MDS.txt")
+
+
+
+
 
 # **PLOT> MDS INTERACTIVE plot with Glimma**
 
@@ -424,9 +437,8 @@ tfit$genes$genes.hgnc_symbol[de.down]
 
 # Examining individual DE genes from top to bottom
 DEGresults<- topTreat(tfit, coef=1, n=Inf)
-# View(DEGresults)
 
-
+# View(DEGresults)   
 
 # 4.6 ________ EXPORT the strict DE gene list and the analysis results ________
 write.fit(tfit, dt, file=paste0("results/DEG_analysis/DEG_results_",NAME,".txt")) # analysis result
@@ -465,10 +477,10 @@ df$status %>% table
 df$top20 <- ifelse(df$neg_log10_pvalue> 10, 1,0)
 df$top20 %>% table
 
-df$neg_log10_pvalue %>% sort(decreasing = T)
 
 library(ggrepel)
 min_log_qval <- df %>% filter(strict!=0) %>% .$neg_log10_pvalue %>% min
+
 df %>% ggplot(aes(x = log2_FoldChange, y = neg_log10_pvalue)) + geom_point(aes(colour=status)) + 
   geom_point(data= df %>% filter(strict!=0), shape=1, colour="black") +
   geom_hline(yintercept = -log10(0.05),linetype=2) +
@@ -482,10 +494,12 @@ df %>% ggplot(aes(x = log2_FoldChange, y = neg_log10_pvalue)) + geom_point(aes(c
 
 ggsave("plots/DEG_analysis/Volcano_plot_strict_DEG.pdf", device = "pdf", width = 8, height = 7)
 
+write_tsv(df, "plots/DEG_analysis/Data_Volcano_plot_strict_DEG.txt")
 
 
 
 ############################## HEATMAPS ###################################
+
 
 library(pheatmap)
 
@@ -511,6 +525,8 @@ import$MMrisk_CLASSIFIER_ALL <- dplyr::recode(as.character(import$MMrisk_CLASSIF
 
 # select only pts with GEP
 import_pts <- import %>% filter(Study_Visit_iD %in% PTS)
+
+
 
 #_____ generate CCND1/2/3 clust label ______ 
 
@@ -601,7 +617,7 @@ anno_colors = list(
   HD_chr11q= c(`1` = "blue", `0` = "grey80")
 )
 
-mat_r <- mat[c(3,5,4,1,2,6,7),]
+mat_r <- mat[c(3,5,4,1,2,6,7),] # reorder rows for convenient heatmap interpretation
 
 pheatmap(mat_r, 
          clustering_method = "ward.D2",
@@ -631,6 +647,15 @@ pheatmap(mat_r,
          filename = "plots/DEG_analysis/annotated_genes_heatmap.pdf"
 )
 dev.off()
+
+# save data for heatmap in paper
+
+mat_r_df <- mat_r %>% as.data.frame() %>% rownames_to_column("gene")
+
+write_tsv(mat_r_df, "plots/DEG_analysis/data_GenesExpression_heatmap.txt")
+
+write_tsv(anno %>% rownames_to_column("sample"), "plots/DEG_analysis/data_annotation_heatmap.txt")
+
 
 
 

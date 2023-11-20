@@ -330,5 +330,8 @@ ggplot(mat.melt, aes(Var_fact, Var2))+
   labs(x="", y="")
 
 
+
 ggsave("plots/fisher_plots/fisher_matrix_CoMM.pdf", 
        dpi = 300, width = 10, height = 10, units = "in")
+
+write_tsv(mat.melt, "plots/fisher_plots/fisher_matrix_CoMM_data.txt")

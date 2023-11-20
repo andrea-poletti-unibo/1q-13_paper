@@ -128,10 +128,15 @@ colbwr2 <- colorRampPalette(c("#67001F", "#B2182B", "#D6604D", "#F4A582",
                               "#4393C3", "#2166AC", "#053061") %>% rev) 
 
 
-
 #============== create correlation matrix plot ===============
 
 dir.create("plots/correlation_plots/")
+
+
+M_df <- M %>% as.data.frame(row.names = row.names(M)) %>% rownames_to_column("Alteration")
+
+write_tsv(M_df, "plots/correlation_plots/cor_matrix_clonality_CoMMpass.txt")
+
 
 pdf("plots/correlation_plots/cor_matrix_clonality_CoMMpass.pdf", 
     width = 10, height = 11)

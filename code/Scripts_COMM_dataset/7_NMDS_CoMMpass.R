@@ -294,6 +294,12 @@ for(i in seq_along(CATS)){
   snapshot3d(paste0(outdir,name,"_NMDS_CoMMpass_def3D.png"), height = 2000, width = 2000)
 
 }
+ 
+cats_df <- CATS %>% as.data.frame()
+
+exp_data <- cbind(fit3$points, cats_df)
+
+write_tsv(exp_data, "plots/NMDS/CoMMpass/data_NMDS_CoMM_3D.tsv")
 
 
 
@@ -397,6 +403,9 @@ for(i in seq_along(CATS)){
 
 res2 <- res %>% dplyr::filter(group!="gray10", name %in% c("HD", "t_IgH", "risk_1", "risk_3") )
 rownames(res2) <- res2$name
+
+
+write_tsv(res2, "plots/NMDS/CoMMpass/data_NMDS_CoMM_CLUSTERS.tsv")
 
 rgl.open() # Open a new RGL device
 rgl.bg(color = "white") # Setup the background color

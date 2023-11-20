@@ -70,3 +70,5 @@ ggsave("plots/Venn4Ways/Venn_diagram_CoMM.pdf",
 
 ggsave("plots/Venn4Ways/Venn_diagram_CoMM.svg", 
        width = 7, height = 7)
+
+write_tsv(venndf_complete, "plots/Venn4Ways/Venn_diagram_CoMM_data.txt")
