@@ -68,7 +68,7 @@ names(data)
 
 
 
-# filter MDSdata for missing data (missing traslocation from AMB or Bo2005 protocols)
+# filter MDSdata for missing data 
 
 missing_T <- is.na(import$t_11_14) + 
   is.na(import$t_4_14) + 
@@ -80,8 +80,7 @@ table(missing_T)
 
 
 table(missing_T, data$t_IgH, exclude = NULL)
-table(missing_T, import$PROTOCOL, exclude = NULL)
-table(data$t_IgH, import$PROTOCOL, exclude = NULL)
+
 
 
 df.2<- dplyr::filter(data, !is.na(t_IgH))

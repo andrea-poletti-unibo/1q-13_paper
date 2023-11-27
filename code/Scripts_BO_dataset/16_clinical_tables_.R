@@ -29,16 +29,12 @@ data <- data %>% as.data.frame()
 
 ID <- "ID"
 
-data$PROTOCOL_group <- ifelse(data$PROTOCOL=="EMN02","EMN02",ifelse(data$PROTOCOL=="BO2005","BO2005","AMB"))
-data$PROTOCOL_group %>% table
 
-
-
-############################# PROTOCOL_group ###################################
+############################# Cohort_group ###################################
 
 #============ numerical ============
 
-groupvar <- "PROTOCOL_group"
+groupvar <- "Cohort_group"
 
 groups <- data[,groupvar] %>% unique() %>% as.character()
 
@@ -82,26 +78,28 @@ res_num_df <- res %>% as.data.frame()
 
 
 xlsx::write.xlsx(res_num_df, 
-                 "results/Clinical_anlysis/BO_dataset/tables/clinical_numeric_variables_in_protocols_Bologna.xlsx",
+                 "results/Clinical_anlysis/BO_dataset/tables/clinical_numeric_variables_in_cohorts_Bologna.xlsx",
                  row.names = F)
 
 
 
 #============ categorical ============
 
-groupvar <- "PROTOCOL_group"
+groupvar <- "Cohort_group"
 
 groups <- data[,groupvar] %>% unique() %>% as.character()
 
 
 library(fastDummies)
 
-data_var_cat <- data %>% select(where(function(x) !is.na(x) && length(unique(x))<15 && length(unique(x))>1), 
+data_var_cat <- data %>% select(where(function(x) length(unique(x))<15 && length(unique(x))>1), 
                                 !!as.symbol(groupvar), 
                                 !!as.symbol(ID))
 
 data_var_cat %>% names
-data_var_cat_def <- data_var_cat %>% select(PROTOCOL:OS_EVENT, HD_chr_3:PROTOCOL_group) %>% select(-contains("_all_"))
+data_var_cat_def <- data_var_cat %>% select(OLD_0_1:OS_EVENT, HD_chr_3:MM_risk_3) %>% select(-contains("_all_"))
+
+data_var_cat_def %>% names
 
 data_var_cat_def_dummy <- data_var_cat_def %>% dummy_cols(ignore_na = T)
 
@@ -136,10 +134,12 @@ for(i in data_var_cat_def_dummy %>% names) {
 res_cat_df <- res %>% as.data.frame()
 
 xlsx::write.xlsx(res_cat_df, 
-                 "results/Clinical_anlysis/BO_dataset/tables/clinical_categoric_variables_in_protocols_Bologna.xlsx",
+                 "results/Clinical_anlysis/BO_dataset/tables/clinical_categoric_variables_in_cohorts_Bologna.xlsx",
                  row.names = F)
 
- 
+
+
+
 ############################### MM_group ####################################
 
 #============ numerical ============
@@ -204,12 +204,12 @@ groups <- data[,groupvar] %>% unique() %>% as.character()
 
 library(fastDummies)
 
-data_var_cat <- data %>% select(where(function(x) !is.na(x) && length(unique(x))<15 && length(unique(x))>1), 
+data_var_cat <- data %>% select(where(function(x) && length(unique(x))<15 && length(unique(x))>1), 
                                 !!as.symbol(groupvar), 
                                 !!as.symbol(ID))
 
 data_var_cat %>% names
-data_var_cat_def <- data_var_cat %>% select(PROTOCOL:OS_EVENT, HD_chr_3:PROTOCOL_group) %>% select(-contains("_all_"))
+data_var_cat_def <- data_var_cat %>% select(OLD_0_1:OS_EVENT, HD_chr_3:MM_risk_3) %>% select(-contains("_all_"))
 
 data_var_cat_def_dummy <- data_var_cat_def %>% dummy_cols(ignore_na = T)
 
@@ -314,12 +314,12 @@ groups <- data[,groupvar] %>% unique() %>% as.character()
 
 library(fastDummies)
 
-data_var_cat <- data %>% select(where(function(x) !is.na(x) && length(unique(x))<15 && length(unique(x))>1), 
+data_var_cat <- data %>% select(where(function(x) && length(unique(x))<15 && length(unique(x))>1), 
                                 !!as.symbol(groupvar), 
                                 !!as.symbol(ID))
 
 data_var_cat %>% names
-data_var_cat_def <- data_var_cat %>% select(PROTOCOL:OS_EVENT, HD_chr_3:PROTOCOL_group) %>% select(-contains("_all_"))
+data_var_cat_def <- data_var_cat %>% select(OLD_0_1:OS_EVENT, HD_chr_3:MM_risk_3) %>% select(-contains("_all_"))
 
 data_var_cat_def_dummy <- data_var_cat_def %>% dummy_cols(ignore_na = T)
 
@@ -424,12 +424,12 @@ groups <- data[,groupvar] %>% unique() %>% as.character()
 
 library(fastDummies)
 
-data_var_cat <- data %>% select(where(function(x) !is.na(x) && length(unique(x))<15 && length(unique(x))>1), 
+data_var_cat <- data %>% select(where(function(x) && length(unique(x))<15 && length(unique(x))>1), 
                                 !!as.symbol(groupvar), 
                                 !!as.symbol(ID))
 
 data_var_cat %>% names
-data_var_cat_def <- data_var_cat %>% select(PROTOCOL:OS_EVENT, HD_chr_3:PROTOCOL_group) %>% select(-contains("_all_"))
+data_var_cat_def <- data_var_cat %>% select(OLD_0_1:OS_EVENT, HD_chr_3:MM_risk_3) %>% select(-contains("_all_"))
 
 data_var_cat_def_dummy <- data_var_cat_def %>% dummy_cols(ignore_na = T)
 

@@ -110,9 +110,9 @@ import$MMrisk1_and_CCND2_t <- ifelse(import$MMrisk_CLASS==1 & (import$FISH_T_4_1
 
 #_______additional data management___________
 
-class(import$PROTOCOL_REV)
-import$PROTOCOL_REV<-as.factor(import$PROTOCOL_REV)
-levels(import$PROTOCOL_REV)
+class(import$Cohort_group)
+import$Cohort_group<-as.factor(import$Cohort_group)
+levels(import$Cohort_group)
 
 import$OLD <-import$OLD_0_1
 
@@ -169,19 +169,19 @@ PFS <- Surv(import$PFS_I_MONTHS, import$PFS_I_EVENT)
 #############################
 
 
-#_______ PROTOCOL ________ 
+#_______ cohort ________ 
 
-gg <- ggsurvplot(survfit(OS ~ import$PROTOCOL_REV, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("AMB", "BO2005", "EMN02"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+gg <- ggsurvplot(survfit(OS ~ import$Cohort_group, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("AMB", "BO2005", "EMN02"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
 print(gg)
-ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "protocol_rev_OS.png", path = outpath, dpi = 300, height = 6, width = 8)
-gg <- ggsurvplot(survfit(PFS ~ import$PROTOCOL_REV, data = import) , pval = T, risk.table = T, xlab = "PFS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("AMB", "BO2005", "EMN02"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "Cohort_group_OS.png", path = outpath, dpi = 300, height = 6, width = 8)
+gg <- ggsurvplot(survfit(PFS ~ import$Cohort_group, data = import) , pval = T, risk.table = T, xlab = "PFS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("AMB", "BO2005", "EMN02"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
 print(gg)
-ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "protocol_rev_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
+ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "Cohort_group_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
 
-with(import, coxph(OS ~ PROTOCOL_REV  )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ PROTOCOL_REV )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ Cohort_group  )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ Cohort_group )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -195,8 +195,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "OLD_0_1_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ OLD_0_1 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ OLD_0_1 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ OLD_0_1 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ OLD_0_1 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #_______ SEX ________ 
@@ -209,8 +209,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "SEX_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ SEX + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ SEX + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ SEX + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ SEX + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #_______ B2M _______ 
@@ -224,8 +224,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "B2M_median_PFS.png"
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ B2M + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ B2M + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ B2M + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ B2M + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -240,8 +240,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "ALBUMIN_median_PFS.
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ ALBUMIN + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ ALBUMIN + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ ALBUMIN + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ ALBUMIN + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -257,8 +257,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "HB_m_105_PFS.png", 
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ HB_m_105 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ HB_m_105 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ HB_m_105 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ HB_m_105 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #_______ PLT ________ 
@@ -272,8 +272,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "PLT_m_150_PFS.png",
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ PLT_m_150 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ PLT_m_150 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ PLT_m_150 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ PLT_m_150 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #________ PC ________ 
 
@@ -285,8 +285,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "PC_M_60_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ PC_M_60 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ PC_M_60 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ PC_M_60 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ PC_M_60 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #______ LDH __________ 
 
@@ -298,8 +298,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "LDH_UL_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ LDH_UL + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ LDH_UL + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ LDH_UL + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ LDH_UL + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #______ ISS __________ 
 
@@ -311,8 +311,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "ISS_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ ISS + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ ISS + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ ISS + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ ISS + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #______ R-ISS __________ 
 
@@ -324,8 +324,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "R_ISS_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ R_ISS + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ R_ISS + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ R_ISS + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ R_ISS + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #______ Ig_Isotype __________ 
 
@@ -337,8 +337,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "IG_ISOTYPE_REV_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ IG_ISOTYPE_REV + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ IG_ISOTYPE_REV + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ IG_ISOTYPE_REV + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ IG_ISOTYPE_REV + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #______ Light-Chain __________ 
 
@@ -351,8 +351,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "LIGHT_CHAIN_PFS.png
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ LIGHT_CHAIN + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ LIGHT_CHAIN + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ LIGHT_CHAIN + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ LIGHT_CHAIN + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #______ TX yes/no ________ 
@@ -365,8 +365,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "ASCT_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ ASCT + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ ASCT + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ ASCT + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ ASCT + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -471,8 +471,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "NUMBERS_TX_FRONT_LI
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ NUMBERS_TX_FRONT_LINE + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ NUMBERS_TX_FRONT_LINE + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ NUMBERS_TX_FRONT_LINE + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ NUMBERS_TX_FRONT_LINE + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -488,8 +488,8 @@ with(import, coxph(PFS ~ NUMBERS_TX_FRONT_LINE + strata(PROTOCOL_REV) )) %>% tid
   
   
   write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-  with(import, coxph(OS ~ MAINTENANCE + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-  with(import, coxph(PFS ~ MAINTENANCE + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+  with(import, coxph(OS ~ MAINTENANCE + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+  with(import, coxph(PFS ~ MAINTENANCE + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
   
   
   
@@ -584,8 +584,8 @@ with(import, coxph(PFS ~ NUMBERS_TX_FRONT_LINE + strata(PROTOCOL_REV) )) %>% tid
   
   
   write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-  with(import, coxph(OS ~ CONSOLIDATION + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-  with(import, coxph(PFS ~ CONSOLIDATION + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+  with(import, coxph(OS ~ CONSOLIDATION + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+  with(import, coxph(PFS ~ CONSOLIDATION + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -600,8 +600,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "Induction_therapy_P
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ Induction_therapy + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ Induction_therapy + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ Induction_therapy + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ Induction_therapy + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #______ Induction_response_M_VGPR __________ 
@@ -615,8 +615,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "Induction_response_
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ Induction_response_M_VGPR + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ Induction_response_M_VGPR + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ Induction_response_M_VGPR + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ Induction_response_M_VGPR + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #______ Induction_response_M_CR __________ 
@@ -630,8 +630,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "Induction_response_
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ Induction_response_M_CR + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ Induction_response_M_CR + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ Induction_response_M_CR + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ Induction_response_M_CR + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 #############################
 
 
@@ -654,8 +654,8 @@ import$NOTE_TRANSLOCATION <- as.character(import$NOTE_TRANSLOCATION)
 import$NOTE_TRANSLOCATION2 <- with(import, ifelse(NOTE_TRANSLOCATION == "non traslocato" | NOTE_TRANSLOCATION == "pannello incompleto", "no_trans_uncomplete", NOTE_TRANSLOCATION) )
 table(import$NOTE_TRANSLOCATION2)
 
-with(import, coxph(OS ~ import$NOTE_TRANSLOCATION2 + strata(PROTOCOL_REV) ))
-with(import, coxph(OS ~ import$FISH_T_11_14 + import$FISH_T_14_16 + import$FISH_T_14_16 +import$FISH_T_14_20 +import$FISH_T_4_14 +import$FISH_T_6_14, strata(PROTOCOL_REV) ))
+with(import, coxph(OS ~ import$NOTE_TRANSLOCATION2 + strata(Cohort_group) ))
+with(import, coxph(OS ~ import$FISH_T_11_14 + import$FISH_T_14_16 + import$FISH_T_14_16 +import$FISH_T_14_20 +import$FISH_T_4_14 +import$FISH_T_6_14, strata(Cohort_group) ))
 
 gg <- ggsurvplot(survfit(OS ~ import$NOTE_TRANSLOCATION2, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("None", "t(11_14)", "t(14_16)", "t(14_20)", "t(4_14)", "t(6_14)"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
 print(gg)
@@ -665,8 +665,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "ALL_TRANSLOCATIONS_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis_230321.txt"), append = T)
-with(import, coxph(OS ~ import$NOTE_TRANSLOCATION + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis_240221.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ import$NOTE_TRANSLOCATION + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis_240221.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ import$NOTE_TRANSLOCATION + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis_240221.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ import$NOTE_TRANSLOCATION + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis_240221.txt"), append = T, col_names = T)
 
 
 # Follow translocations considered separately
@@ -682,8 +682,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "FISH_T_4_14_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ FISH_T_4_14 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ FISH_T_4_14 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ FISH_T_4_14 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ FISH_T_4_14 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #_______ t(11;14) _______ 
 
@@ -695,8 +695,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "FISH_T_11_14_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ FISH_T_11_14 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ FISH_T_11_14 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ FISH_T_11_14 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ FISH_T_11_14 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #_______ t(14;16) _______ 
 
@@ -708,8 +708,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "FISH_T_14_16_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ FISH_T_14_16 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ FISH_T_14_16 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ FISH_T_14_16 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ FISH_T_14_16 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #_______ t(14;20) _______ 
 
@@ -721,8 +721,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "FISH_T_14_20_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ FISH_T_14_20 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ FISH_T_14_20 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ FISH_T_14_20 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ FISH_T_14_20 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #_______ t(6;14) _______ 
 
@@ -734,8 +734,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "FISH_T_6_14_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ FISH_T_6_14 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ FISH_T_6_14 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ FISH_T_6_14 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ FISH_T_6_14 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #_______ Hyperdiploidy _______ 
 
@@ -748,8 +748,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "HyperDiploidy_PFS.p
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ HyperDiploidy + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ HyperDiploidy + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ HyperDiploidy + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ HyperDiploidy + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #______ DEL 17p _______ 
@@ -762,8 +762,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "DEL_maj-broad_chr_17p_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ `DEL_maj-broad_chr_17p` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ `DEL_maj-broad_chr_17p` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ `DEL_maj-broad_chr_17p` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ `DEL_maj-broad_chr_17p` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #______ DEL TP53 ________ 
 
@@ -775,8 +775,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "DEL_maj-focal_TP53_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ `DEL_maj-focal_TP53` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ `DEL_maj-focal_TP53` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ `DEL_maj-focal_TP53` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ `DEL_maj-focal_TP53` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #______ DEL TP53 FISH ________ 
@@ -789,8 +789,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "FISH_Del_17p_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ FISH_Del_17p + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ FISH_Del_17p + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ FISH_Del_17p + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ FISH_Del_17p + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -805,8 +805,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "FISH_Del_1p36_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ FISH_Del_1p36 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ FISH_Del_1p36 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ FISH_Del_1p36 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ FISH_Del_1p36 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -822,8 +822,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "AMP_maj-broad_chr_1_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ `AMP_maj-broad_chr_1q` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ `AMP_maj-broad_chr_1q` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ `AMP_maj-broad_chr_1q` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ `AMP_maj-broad_chr_1q` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -837,8 +837,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk_1q_all_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ MMrisk_1q_all + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ MMrisk_1q_all + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ MMrisk_1q_all + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ MMrisk_1q_all + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #______ DEL 13 ________ 
@@ -852,8 +852,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "DEL_maj-broad_chr_1
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ `DEL_maj-broad_chr_13q` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ `DEL_maj-broad_chr_13q` + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ `DEL_maj-broad_chr_13q` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ `DEL_maj-broad_chr_13q` + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 # 13 MMrisk focal+broad
@@ -866,8 +866,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk_13_all_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ MMrisk_13_all + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ MMrisk_13_all + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ MMrisk_13_all + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ MMrisk_13_all + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 #################################
 
 #3C._______RISK CATEGORIES__________
@@ -889,8 +889,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk_CLASS_PFS.pn
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ MMrisk_class + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ MMrisk_class + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ MMrisk_class + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ MMrisk_class + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 import$MMrisk_class<-relevel(import$MMrisk_class, ref=2)
 
@@ -905,8 +905,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk1_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ MMrisk1 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ MMrisk1 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ MMrisk1 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ MMrisk1 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 #_______ Risk 2 ______ no
 
@@ -919,8 +919,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk2_PFS.png", p
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ MMrisk2 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ MMrisk2 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ MMrisk2 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ MMrisk2 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #_______ Risk 3 _______ no
@@ -934,8 +934,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk3_PFS.png", p
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ MMrisk3 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ MMrisk3 + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ MMrisk3 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ MMrisk3 + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 #____ MM RISK a/b _______ analisi bella con 4 gruppi (nessuno, 13, 1q, tutti)
@@ -952,8 +952,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk_AB_ALL_PFS.p
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ MMrisk_AB_ALL + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ MMrisk_AB_ALL + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ MMrisk_AB_ALL + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ MMrisk_AB_ALL + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -969,8 +969,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "risk1_VS_1q_VS_othe
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ risk1_VS_1q_VS_other + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ risk1_VS_1q_VS_other + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ risk1_VS_1q_VS_other + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ risk1_VS_1q_VS_other + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -988,8 +988,8 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "risk1_VS_1q_VS_othe
 
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(imp1q, coxph(OS1q ~ risk1_VS_1q_VS_other + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(imp1q, coxph(PFS1q ~ risk1_VS_1q_VS_other + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(imp1q, coxph(OS1q ~ risk1_VS_1q_VS_other + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(imp1q, coxph(PFS1q ~ risk1_VS_1q_VS_other + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 ################################
 
 #3D.______RISK_ULTRA__________
@@ -1006,8 +1006,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "ULTRA_MMrisk_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ ULTRA_MMrisk + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ ULTRA_MMrisk + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ ULTRA_MMrisk + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ ULTRA_MMrisk + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 
@@ -1021,8 +1021,8 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "ULTRA_High_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ ULTRA_High + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ ULTRA_High + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ ULTRA_High + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ ULTRA_High + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 
 
 as.symbol()
@@ -1037,6 +1037,6 @@ print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "ULTRA_High_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
-with(import, coxph(OS ~ ULTRA_Low + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
-with(import, coxph(PFS ~ ULTRA_Low + strata(PROTOCOL_REV) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(OS ~ ULTRA_Low + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+with(import, coxph(PFS ~ ULTRA_Low + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 ###############################

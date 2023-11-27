@@ -112,9 +112,9 @@ levels(import$IgH_translocation_type)
 
 #========= additional data management =========
 
-class(import$PROTOCOL_REV)
-import$PROTOCOL_REV<-as.factor(import$PROTOCOL_REV)
-levels(import$PROTOCOL_REV)
+class(import$Cohort_group)
+import$Cohort_group<-as.factor(import$Cohort_group)
+levels(import$Cohort_group)
 
 import$OLD <-import$OLD_0_1
 
@@ -275,7 +275,7 @@ mv_R <- coxph(OS ~ OLD + SEX +
                 MMrisk_allclass +
                 FISH_Del_17p + FISH_Del_1p36 + HyperDiploidy +
                 IgH_translocation_type +
-                strata(PROTOCOL_REV), data = import)
+                strata(Cohort_group), data = import)
 mv_R %>% summary()
 
 ggforest2(mv_R, main = "OS MM-BO (model 1)") 
@@ -293,7 +293,7 @@ mv_R <- coxph(PFS ~ OLD + SEX +
                 MMrisk_allclass +
                 FISH_Del_17p + FISH_Del_1p36 + HyperDiploidy +
                 IgH_translocation_type +
-                strata(PROTOCOL_REV), data = import )
+                strata(Cohort_group), data = import )
 mv_R %>% summary()
 
 ggforest2(mv_R, main = "PFS MM-BO (model 1)") 
@@ -314,7 +314,7 @@ mv_R <- coxph(OS ~ OLD + SEX +
                 MMrisk_class_t_CCND2 +
                 FISH_Del_17p + FISH_Del_1p36 + HyperDiploidy +
                 FISH_T_4_14_pure + FISH_T_14_16_pure + FISH_T_14_20_pure + FISH_T_11_14 + FISH_T_6_14 +
-                strata(PROTOCOL_REV), data = import )
+                strata(Cohort_group), data = import )
 mv_R %>% summary()
 
 ggforest2(mv_R, main = "OS MM-BO (model 2)") 
@@ -332,7 +332,7 @@ mv_R <- coxph(PFS ~ OLD + SEX +
                 MMrisk_class_t_CCND2 +
                 FISH_Del_17p + FISH_Del_1p36 + HyperDiploidy +
                 FISH_T_4_14_pure + FISH_T_14_16_pure + FISH_T_14_20_pure + FISH_T_11_14 + FISH_T_6_14 +
-                strata(PROTOCOL_REV), data = import )
+                strata(Cohort_group), data = import )
 mv_R %>% summary()
 
 ggforest2(mv_R, main = "PFS MM-BO (model 2)") 

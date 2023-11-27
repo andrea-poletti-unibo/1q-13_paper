@@ -124,4 +124,3 @@ complete_database$DEL_maj_call_chr_16q <- ifelse( complete_database$DEL_maj_broa
 #_____ export ______
 write_tsv(complete_database, "results/complete_database_BO_1q_13.txt")
 
-

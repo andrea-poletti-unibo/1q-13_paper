@@ -66,7 +66,7 @@ names(data)
 
 
 
-# filter data for missing data (missing traslocation from AMB or Bo2005 protocols)
+# filter data for missing data (missing traslocation)
 
 
 missing_T <- is.na(import$t_11_14) + is.na(import$t_4_14) + is.na(import$t_6_14) + is.na(import$t_14_16) + is.na(import$t_14_20)
