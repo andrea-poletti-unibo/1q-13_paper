@@ -171,10 +171,10 @@ PFS <- Surv(import$PFS_I_MONTHS, import$PFS_I_EVENT)
 
 #_______ cohort ________ 
 
-gg <- ggsurvplot(survfit(OS ~ import$Cohort_group, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("AMB", "BO2005", "EMN02"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+gg <- ggsurvplot(survfit(OS ~ import$Cohort_group, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("BO-2", "BO-3", "BO-1"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
 print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "Cohort_group_OS.png", path = outpath, dpi = 300, height = 6, width = 8)
-gg <- ggsurvplot(survfit(PFS ~ import$Cohort_group, data = import) , pval = T, risk.table = T, xlab = "PFS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("AMB", "BO2005", "EMN02"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+gg <- ggsurvplot(survfit(PFS ~ import$Cohort_group, data = import) , pval = T, risk.table = T, xlab = "PFS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("BO-2", "BO-3", "BO-1"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
 print(gg)
 ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "Cohort_group_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
 
