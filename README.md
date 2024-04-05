@@ -2,7 +2,7 @@
 # 1q-13 paper data and code repository
 This is the repository containg all the raw data and analysis scripts used for generating the reults of the following manuscript: 
 
-Terragna C. & Poletti A. et al. (2023) "Multi-dimensional scaling techniques unveiled gain1q&loss13q co-occurrence in Multiple Myeloma patients with specific genomic, transcriptional and adverse clinical features." (paper in publication) 
+Terragna C. & Poletti A. et al. (2024). Multi-dimensional scaling techniques unveiled gain1q&loss13q co-occurrence in Multiple Myeloma patients with specific genomic, transcriptional and adverse clinical features. Nature Communications, 15(1), 1551. DOI: https://doi.org/10.1038/s41467-024-45000-z 
 
 # Directory tree structure
 - code: contains the R scripts used to analyze both CoMMpass and BO datasets.
