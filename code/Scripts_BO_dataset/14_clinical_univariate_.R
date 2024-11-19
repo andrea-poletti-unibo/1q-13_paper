@@ -108,6 +108,28 @@ import$FISH_T_14_16_pure <- ifelse(import$MMrisk_CLASS != 1 & import$FISH_T_14_1
 import$FISH_T_14_20_pure <- ifelse(import$MMrisk_CLASS != 1 & import$FISH_T_14_20 ==1, 1, 0)
 import$MMrisk1_and_CCND2_t <- ifelse(import$MMrisk_CLASS==1 & (import$FISH_T_4_14 ==1 | import$FISH_T_14_16 ==1 | import$FISH_T_14_20 ==1) , 1, 0)
 
+
+
+#_____ create pure MMrisk1 and pure CCND2 vars _____
+
+import$CCND2_traslocation <- 0
+import$CCND2_traslocation[import$FISH_T_4_14==1] <- 1
+import$CCND2_traslocation[import$FISH_T_14_16==1] <- 1
+import$CCND2_traslocation[import$FISH_T_14_20==1] <- 1
+import$CCND2_traslocation[is.na(import$FISH_T_4_14) & is.na(import$FISH_T_14_16) & is.na(import$FISH_T_14_20)] <- NA
+
+
+import$MMrisk_class_t_CCND2 <- ifelse(import$MMrisk_CLASS==1 & import$CCND2_traslocation ==1 , "t&1q&13+",
+                                      ifelse(import$MMrisk_CLASS==1, "1q&13+_pure", import$MMrisk_CLASS %>% as.character))
+
+import$MMrisk_class_t_CCND2 %>% table
+
+import$FISH_T_4_14_pure <- ifelse(import$MMrisk_CLASS != 1 & import$FISH_T_4_14 ==1, 1, 0)
+import$FISH_T_14_16_pure <- ifelse(import$MMrisk_CLASS != 1 & import$FISH_T_14_16 ==1, 1, 0)
+import$FISH_T_14_20_pure <- ifelse(import$MMrisk_CLASS != 1 & import$FISH_T_14_20 ==1, 1, 0)
+
+
+
 #_______additional data management___________
 
 class(import$Cohort_group)
@@ -990,6 +1012,31 @@ ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "risk1_VS_1q_VS_othe
 write_tsv(data.frame("\n"),paste0(outpath,"report_cox_analysis.txt"), append = T)
 with(imp1q, coxph(OS1q ~ risk1_VS_1q_VS_other + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="OS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
 with(imp1q, coxph(PFS1q ~ risk1_VS_1q_VS_other + strata(Cohort_group) )) %>% tidy( exponentiate =T, conf.int = T) %>% cbind(surv="PFS", .)%>% write_tsv(paste0(outpath,"report_cox_analysis.txt"), append = T, col_names = T)
+
+
+
+
+
+MMrisk_class_t_CCND2
+
+
+import$MMrisk_class_t_CCND2 %>% table
+
+gg <- ggsurvplot(survfit(OS ~ import$MMrisk_class_t_CCND2, data = import) , pval = T, risk.table = T, xlab = "OS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("1q&13+ pure", "1q/13", "1q&13-","t&1q&13"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk_class_t_CCND2_OS.png", path = outpath, dpi = 300, height = 6, width = 8)
+
+gg <- ggsurvplot(survfit(PFS ~ import$MMrisk_class_t_CCND2, data = import) , pval = T, risk.table = T, xlab = "PFS", surv.median.line = "hv", break.time.by = 12, legend= c(0.9,0.9), legend.title="", legend.labs=c("1q&13+ pure", "1q/13", "1q&13-","t&1q&13"), tables.y.text = F, risk.table.y.text.col = TRUE, font.legend=c("bold"))
+print(gg)
+
+ggsave(plot = survminer:::.build_ggsurvplot(gg), filename = "MMrisk1_and_CCND2_t_PFS.png", path = outpath, dpi = 300, height = 6, width = 8)
+
+
+
+
+
+
 ################################
 
 #3D.______RISK_ULTRA__________

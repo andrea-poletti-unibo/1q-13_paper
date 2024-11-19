@@ -523,3 +523,131 @@ rgl.quads( x = rep(xlim, each = 2),
 rgl.viewpoint(theta = 60, phi = 30, fov = 60, zoom = 0.7)
 
 snapshot3d(paste0("plots/NMDS/",name,"_NMDS_Bolo_CLUSTERS.png"), height = 2000, width = 2000)
+
+
+
+
+
+
+
+##########################################
+
+
+library(rgl)
+
+
+HD_t_IgH <- ifelse(category_HD == "blue" & category_t_IgH == "purple", 
+  "gray80", ifelse(category_HD == "blue" & category_t_IgH == "gray10", "blue","purple"))
+
+HD_t_IgH
+
+
+CATS <- list(
+  HD=category_HD,
+  t_IgH=category_t_IgH,
+  AMP_1q= category_AMP_1q,
+  DEL_13=category_DEL_13q,
+  MM_risk=category_MMrisk,
+  risk_1=category_risk1,
+  risk_3=category_risk3,
+  HD_t_IgH=HD_t_IgH
+  )
+
+COLS <- list(
+  HD=c("blue","grey20"),
+  t_IgH=c("grey20","purple"),
+  AMP_1q= c("grey20","green"),
+  DEL_13=c("grey20","red"),
+  MM_risk=c("gray50","orangered","turquoise3"),
+  risk_1=c("grey20","orangered"),
+  risk_3=c("grey20","turquoise3"),
+  HD_t_IgH=c("blue","gray80","purple")
+  )
+
+# function that rotates the plot
+myrotatefunction<-function(time) {
+  value <- time*10 + 30 %% 360
+  rgl.viewpoint(
+    theta = value, 
+    phi = 20,
+    fov = 60,
+    zoom = 0.7)}
+
+CATS %>% names
+
+i <- 5
+name <- names(CATS[i])
+print(name)
+
+categ <- CATS[i] %>% unlist()
+groups <- CATS[i] %>% unlist %>%  as.factor()
+levs <- levels(groups)
+group.col <- COLS[name] %>% unlist
+ef <- 1.3
+
+df <- fit3$points
+x <- df[,1]
+y <- df[,2]
+z <- df[,3]
+
+rgl.open() # Open a new RGL device
+rgl.bg(color = "white") # Setup the background color
+rgl.spheres(df, r = 0.25, color = categ) # ADD POINTS
+
+lim <- function(x){c(min(x), max(x)) * ef}
+# Add axes
+rgl.lines(c(-20,12), c(0, 0), c(0, 0), color = "grey70", lwd=3)
+rgl.lines(c(0, 0), lim(y), c(0, 0), color = "grey70", lwd=3)
+rgl.lines(c(0, 0), c(0, 0), lim(z), color = "grey70", lwd=3)
+
+# Add a point at the end of each axes to specify the direction
+axes <- rbind(c(12, 0, 0), 
+              c(0, lim(y)[2], 0), 
+              c(0, 0, lim(z)[2]))
+rgl.points(axes, size=9, color = "grey70") 
+
+# Add axis labels
+rgl.texts(axes, text = c("NMDS1", "NMDS2", "NMDS3"), 
+          color = "grey70",
+          cex=2,
+          adj = c(0.5, -0.8), 
+          size = 1.5)
+
+# Add plane
+xlim <- lim(x)/ef
+zlim <- lim(z)/ef
+rgl.quads( x = rep(xlim, each = 2),
+           y = c(0, 0, 0, 0),
+           z = c(zlim[1], zlim[2], zlim[2], zlim[1]),
+           alpha=0.15)
+
+# # Compute ellipse for each group
+# for (j in 1:length(levs)) {
+#   group <- levs[j]
+#   selected <- groups == group
+#   xx <- x[selected]
+#   yy <- y[selected]
+#   zz <- z[selected]
+#   ellips <- ellipse3d(cov(cbind(xx,yy,zz)),
+#                       centre=c(mean(xx), mean(yy), mean(zz)), level = 0.95)
+#   shade3d(ellips, col = group.col[j], alpha = 0.1, lit = F)
+#   wire3d(ellips, col = group.col[j], alpha = 0.3, lit = F)
+# }
+
+# Compute centers and lines for each group
+for (j in 1:length(levs)) {
+  group <- levs[j]
+  selected <- groups == group
+  xx <- x[selected] 
+  yy <- y[selected]
+  zz <- z[selected]
+  
+  X1 <- mapply(c, xx, mean(xx), SIMPLIFY = F) %>% unlist
+  Y1 <- mapply(c, yy, mean(yy), SIMPLIFY = F) %>% unlist
+  Z1 <- mapply(c, zz, mean(zz), SIMPLIFY = F) %>% unlist
+  
+  rgl.lines(x=X1, y=Y1, z=Z1, color = group.col[j], size=1)
+}
+
+
+play3d(myrotatefunction, startTime = 1, duration = 60)
